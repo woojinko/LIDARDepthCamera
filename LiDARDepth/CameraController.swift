@@ -212,7 +212,7 @@ extension CameraController: AVCapturePhotoCaptureDelegate {
                                       colorY: pixelBuffer.texture(withFormat: .r8Unorm, planeIndex: 0, addToCache: textureCache),
                                       colorCbCr: pixelBuffer.texture(withFormat: .rg8Unorm, planeIndex: 1, addToCache: textureCache),
                                       cameraIntrinsics: cameraCalibrationData.intrinsicMatrix,
-                                      cameraReferenceDimensions: cameraCalibrationData.intrinsicMatrixReferenceDimensions)
+                                      cameraReferenceDimensions: cameraCalibrationData.intrinsicMatrixReferenceDimensions, capturedPhoto: photo)
         
         delegate?.onNewPhotoData(capturedData: data)
     }

@@ -53,6 +53,16 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
         waitingForCapture = false
     }
     
+    func getDocumentsDirectory() -> URL {
+        // find all possible documents directories for this user
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+
+        // just send back the first one, which ought to be the only one
+        return paths[0]
+    }
+    
+    // Called on every photo capture
+    
     func onNewPhotoData(capturedData: CameraCapturedData) {
         // Because the views hold a reference to `capturedData`, the app updates each texture separately.
         self.capturedData.depth = capturedData.depth
@@ -60,6 +70,24 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
         self.capturedData.colorCbCr = capturedData.colorCbCr
         self.capturedData.cameraIntrinsics = capturedData.cameraIntrinsics
         self.capturedData.cameraReferenceDimensions = capturedData.cameraReferenceDimensions
+        self.capturedData.capturedPhoto = capturedData.capturedPhoto
+        
+        let compressionQuality: CGFloat = 0.9
+        
+        
+        let url = getDocumentsDirectory().appendingPathComponent("image.jpg")
+        
+//        let URL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+        
+        guard let imageData = self.capturedData.capturedPhoto?.fileDataRepresentation() else { return}
+        let imageAsUIImage = UIImage(data: imageData)
+        let dataUIImage = imageAsUIImage?.jpegData(compressionQuality: compressionQuality)
+        try? dataUIImage?.write(to: url)
+        
+        
+        // FROM RECAPTURE UNIVERSAL
+        // let data = image.jpegData(compressionQuality: compressionQuality)
+        // try? data?.write(to: url)
         waitingForCapture = false
         processingCapturedResult = true
     }
@@ -89,17 +117,20 @@ class CameraCapturedData {
     var colorCbCr: MTLTexture?
     var cameraIntrinsics: matrix_float3x3
     var cameraReferenceDimensions: CGSize
+    var capturedPhoto: AVCapturePhoto?
 
     init(depth: MTLTexture? = nil,
          colorY: MTLTexture? = nil,
          colorCbCr: MTLTexture? = nil,
          cameraIntrinsics: matrix_float3x3 = matrix_float3x3(),
-         cameraReferenceDimensions: CGSize = .zero) {
+         cameraReferenceDimensions: CGSize = .zero,
+         capturedPhoto: AVCapturePhoto? = NSObject() as? AVCapturePhoto) {
         
         self.depth = depth
         self.colorY = colorY
         self.colorCbCr = colorCbCr
         self.cameraIntrinsics = cameraIntrinsics
         self.cameraReferenceDimensions = cameraReferenceDimensions
+        self.capturedPhoto = capturedPhoto ?? NSObject() as? AVCapturePhoto
     }
 }

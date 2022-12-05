@@ -17,6 +17,14 @@ struct ContentView: View {
     @State private var minDepth = Float(0.0)
     @State private var scaleMovement = Float(1.0)
     
+    @State private var image = UIImage(systemName: "placeholdertext.fill")
+    
+    private var url: URL {
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        return paths[0].appendingPathComponent("image.jpg")
+    }
+    
+    
     let maxRangeDepth = Float(15)
     let minRangeDepth = Float(0)
     
@@ -37,45 +45,52 @@ struct ContentView: View {
             SliderDepthBoundaryView(val: $maxDepth, label: "Max Depth", minVal: minRangeDepth, maxVal: maxRangeDepth)
             SliderDepthBoundaryView(val: $minDepth, label: "Min Depth", minVal: minRangeDepth, maxVal: maxRangeDepth)
             ScrollView {
-                LazyVGrid(columns: [GridItem(.flexible(maximum: 600)), GridItem(.flexible(maximum: 600))]) {
-                    
-                    if manager.dataAvailable {
-                        ZoomOnTap {
-                            MetalTextureColorThresholdDepthView(
-                                rotationAngle: rotationAngle,
-                                maxDepth: $maxDepth,
-                                minDepth: $minDepth,
-                                capturedData: manager.capturedData
-                            )
-                            .aspectRatio(calcAspect(orientation: viewOrientation, texture: manager.capturedData.depth), contentMode: .fit)
-                        }
-                        ZoomOnTap {
-                            MetalTextureColorZapView(
-                                rotationAngle: rotationAngle,
-                                maxDepth: $maxDepth,
-                                minDepth: $minDepth,
-                                capturedData: manager.capturedData
-                            )
-                            .aspectRatio(calcAspect(orientation: viewOrientation, texture: manager.capturedData.depth), contentMode: .fit)
-                        }
-                        ZoomOnTap {
-                            MetalPointCloudView(
-                                rotationAngle: rotationAngle,
-                                maxDepth: $maxDepth,
-                                minDepth: $minDepth,
-                                scaleMovement: $scaleMovement,
-                                capturedData: manager.capturedData
-                            )
-                            .aspectRatio(calcAspect(orientation: viewOrientation, texture: manager.capturedData.depth), contentMode: .fit)
-                        }
-                        ZoomOnTap {
-                            DepthOverlay(manager: manager,
-                                         maxDepth: $maxDepth,
-                                         minDepth: $minDepth
-                            )
-                                .aspectRatio(calcAspect(orientation: viewOrientation, texture: manager.capturedData.depth), contentMode: .fit)
-                        }
+                if manager.dataAvailable {
+                    ZoomOnTap {
+                        MetalTextureColorThresholdDepthView(
+                            rotationAngle: rotationAngle,
+                            maxDepth: $maxDepth,
+                            minDepth: $minDepth,
+                            capturedData: manager.capturedData
+                        )
+                        .aspectRatio(calcAspect(orientation: viewOrientation, texture: manager.capturedData.depth), contentMode: .fit)
                     }
+                    ZoomOnTap {
+                        Image(uiImage: image ?? UIImage())
+                            .resizable()
+                            .onAppear {
+                                url.loadImage(&image)
+                            }
+                        
+                        .aspectRatio(calcAspect(orientation: viewOrientation, texture: manager.capturedData.depth), contentMode: .fit)
+                    }
+
+//                        ZoomOnTap {
+//                            MetalTextureColorZapView(
+//                                rotationAngle: rotationAngle,
+//                                maxDepth: $maxDepth,
+//                                minDepth: $minDepth,
+//                                capturedData: manager.capturedData
+//                            )
+//                            .aspectRatio(calcAspect(orientation: viewOrientation, texture: manager.capturedData.depth), contentMode: .fit)
+//                        }
+//                        ZoomOnTap {
+//                            MetalPointCloudView(
+//                                rotationAngle: rotationAngle,
+//                                maxDepth: $maxDepth,
+//                                minDepth: $minDepth,
+//                                scaleMovement: $scaleMovement,
+//                                capturedData: manager.capturedData
+//                            )
+//                            .aspectRatio(calcAspect(orientation: viewOrientation, texture: manager.capturedData.depth), contentMode: .fit)
+//                        }
+//                        ZoomOnTap {
+//                            DepthOverlay(manager: manager,
+//                                         maxDepth: $maxDepth,
+//                                         minDepth: $minDepth
+//                            )
+//                                .aspectRatio(calcAspect(orientation: viewOrientation, texture: manager.capturedData.depth), contentMode: .fit)
+//                        }
                 }
             }
         }

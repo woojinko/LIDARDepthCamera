@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		03612E5F293E76CC00E52653 /* URL+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03612E5E293E76CC00E52653 /* URL+Extensions.swift */; };
 		AE2C81C1273818FF001BDCC7 /* MetalTextureColorZap.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE2C81C0273818FF001BDCC7 /* MetalTextureColorZap.swift */; };
 		AE2C81C3273961FF001BDCC7 /* MetalTextureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE921D37270D7B41000E95C6 /* MetalTextureView.swift */; };
 		AE2C81C427396203001BDCC7 /* MetalTextureColorThresholdDepth.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE2DD57D2732870500FAB8A5 /* MetalTextureColorThresholdDepth.swift */; };
@@ -29,8 +30,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0C34ECABC9005D93C0DF4297 /* LICENSE.txt */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE.txt; sourceTree = "<group>"; };
-		9ED80CBFEB14F0F0F5121BC6 /* SampleCode.xcconfig */ = {isa = PBXFileReference; name = SampleCode.xcconfig; path = Configuration/SampleCode.xcconfig; sourceTree = "<group>"; };
+		03612E5E293E76CC00E52653 /* URL+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+Extensions.swift"; sourceTree = "<group>"; };
+		0C34ECABC9005D93C0DF4297 /* LICENSE.txt */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
+		9ED80CBFEB14F0F0F5121BC6 /* SampleCode.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = SampleCode.xcconfig; path = Configuration/SampleCode.xcconfig; sourceTree = "<group>"; };
 		AE18F046274A126C008BC9E3 /* AVFCapture.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AVFCapture.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AE18F048274A1272008BC9E3 /* CMCapture.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CMCapture.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AE2C81C0273818FF001BDCC7 /* MetalTextureColorZap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetalTextureColorZap.swift; sourceTree = "<group>"; };
@@ -144,6 +146,7 @@
 				AEE83E8F2743EFE800790BF9 /* DepthOverlay.swift */,
 				AEC8871C272ED13C00ED6FCC /* ZoomOnTap.swift */,
 				AE2C81C827396765001BDCC7 /* View+Extensions.swift */,
+				03612E5E293E76CC00E52653 /* URL+Extensions.swift */,
 				AEC8871A272EAFF200ED6FCC /* Metal */,
 			);
 			path = Views;
@@ -179,7 +182,6 @@
 			children = (
 				0C34ECABC9005D93C0DF4297 /* LICENSE.txt */,
 			);
-			name = LICENSE;
 			path = LICENSE;
 			sourceTree = "<group>";
 		};
@@ -268,6 +270,7 @@
 				AE2C81C927396765001BDCC7 /* View+Extensions.swift in Sources */,
 				AEC8871D272ED13C00ED6FCC /* ZoomOnTap.swift in Sources */,
 				AE2C81C52739620A001BDCC7 /* MetalTextureViewDepth.swift in Sources */,
+				03612E5F293E76CC00E52653 /* URL+Extensions.swift in Sources */,
 				AE921D2C270D7B02000E95C6 /* ContentView.swift in Sources */,
 				AED300A5271D6D18008F6007 /* CameraManager.swift in Sources */,
 				AE2C81C3273961FF001BDCC7 /* MetalTextureView.swift in Sources */,
@@ -406,7 +409,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"LiDARDepth/Preview Content\"";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 5YY5JR2FBA;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = LiDARDepth/Info.plist;
@@ -451,7 +454,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"LiDARDepth/Preview Content\"";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 5YY5JR2FBA;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = LiDARDepth/Info.plist;

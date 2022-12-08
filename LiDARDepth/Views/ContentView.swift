@@ -46,12 +46,45 @@ struct ContentView: View {
                                 GalleryView()
                             }){
                                 VStack{
-                                    Image(systemName: "eyes").resizable().aspectRatio(contentMode: .fit).frame(maxWidth:.infinity, maxHeight: 50)
-                                    Text("View")
-                                }.frame(maxHeight:50)
-                            }
+                                    Image(systemName: "eyes").resizable().aspectRatio(contentMode: .fit).frame(maxWidth:.infinity, maxHeight: 200)
+                                    Text("Gallery View")
+                                }.frame(maxHeight:200)
+                            } .aspectRatio(calcAspect(orientation: viewOrientation, texture: manager.capturedData.depth), contentMode: .fit)
                         }
-                    }.aspectRatio(calcAspect(orientation: viewOrientation, texture: manager.capturedData.depth), contentMode: .fit)
+                    }
+                    NavigationView {
+                        VStack {
+                            NavigationLink(destination: {
+                                MetalPointCloudView(
+                                    rotationAngle: rotationAngle,
+                                    maxDepth: $maxDepth,
+                                    minDepth: $minDepth,
+                                    scaleMovement: $scaleMovement,
+                                    capturedData: manager.capturedData
+                                )
+                            }){
+                                VStack{
+                                    Image(systemName: "allergens").resizable().aspectRatio(contentMode: .fit).frame(maxWidth:.infinity, maxHeight: 200)
+                                    Text("Point Cloud")
+                                }.frame(maxHeight:200)
+                            }
+                            .aspectRatio(calcAspect(orientation: viewOrientation, texture: manager.capturedData.depth), contentMode: .fit)
+                        }
+                    }
+                    
+                    NavigationView {
+                        VStack {
+                            NavigationLink(destination: {
+                                MyPointCloudView(capturedData: manager.capturedData)
+                            }){
+                                VStack{
+                                    Image(systemName: "cloud").resizable().aspectRatio(contentMode: .fit).frame(maxWidth:.infinity, maxHeight: 200)
+                                    Text("My Point Cloud")
+                                }.frame(maxHeight:200)
+                            }
+                            .aspectRatio(calcAspect(orientation: viewOrientation, texture: manager.capturedData.depth), contentMode: .fit)
+                        }
+                    }
                 }
             }
         }

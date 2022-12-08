@@ -32,7 +32,6 @@
 		03DC229429415F8600F01EB9 /* CVPixelBufferExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVPixelBufferExtension.swift; sourceTree = "<group>"; };
 		03DC2296294193B100F01EB9 /* GalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryView.swift; sourceTree = "<group>"; };
 		0C34ECABC9005D93C0DF4297 /* LICENSE.txt */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
-		117D759929424C0D00247A0A /* GalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryView.swift; sourceTree = "<group>"; };
 		9ED80CBFEB14F0F0F5121BC6 /* SampleCode.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = SampleCode.xcconfig; path = Configuration/SampleCode.xcconfig; sourceTree = "<group>"; };
 		AE18F046274A126C008BC9E3 /* AVFCapture.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AVFCapture.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AE18F048274A1272008BC9E3 /* CMCapture.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CMCapture.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -151,7 +150,6 @@
 				AE2C81C827396765001BDCC7 /* View+Extensions.swift */,
 				03612E5E293E76CC00E52653 /* URL+Extensions.swift */,
 				AEC8871A272EAFF200ED6FCC /* Metal */,
-				117D759929424C0D00247A0A /* GalleryView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -274,7 +272,6 @@
 				03612E5F293E76CC00E52653 /* URL+Extensions.swift in Sources */,
 				AE921D2C270D7B02000E95C6 /* ContentView.swift in Sources */,
 				AED300A5271D6D18008F6007 /* CameraManager.swift in Sources */,
-				117D759A29424C0D00247A0A /* GalleryView.swift in Sources */,
 				AE2C81C3273961FF001BDCC7 /* MetalTextureView.swift in Sources */,
 				AE921D2A270D7B02000E95C6 /* LiDARDepthApp.swift in Sources */,
 				03DC2297294193B100F01EB9 /* GalleryView.swift in Sources */,
@@ -413,7 +410,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"LiDARDepth/Preview Content\"";
-				DEVELOPMENT_TEAM = 4M7U58298K;
+				DEVELOPMENT_TEAM = 5YY5JR2FBA;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = LiDARDepth/Info.plist;
@@ -461,7 +458,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"LiDARDepth/Preview Content\"";
-				DEVELOPMENT_TEAM = 4M7U58298K;
+				DEVELOPMENT_TEAM = 5YY5JR2FBA;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = LiDARDepth/Info.plist;

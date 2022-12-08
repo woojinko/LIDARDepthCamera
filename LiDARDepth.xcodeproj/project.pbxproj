@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		03612E5F293E76CC00E52653 /* URL+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03612E5E293E76CC00E52653 /* URL+Extensions.swift */; };
+		03D911B0294255B700A0F379 /* MetalPointCloudView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D911AF294255B700A0F379 /* MetalPointCloudView.swift */; };
+		03D911B229425CD200A0F379 /* MyPointCloudView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D911B129425CD200A0F379 /* MyPointCloudView.swift */; };
 		03DC229529415F8600F01EB9 /* CVPixelBufferExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DC229429415F8600F01EB9 /* CVPixelBufferExtension.swift */; };
 		03DC2297294193B100F01EB9 /* GalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DC2296294193B100F01EB9 /* GalleryView.swift */; };
 		AE2C81C3273961FF001BDCC7 /* MetalTextureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE921D37270D7B41000E95C6 /* MetalTextureView.swift */; };
@@ -29,6 +31,8 @@
 
 /* Begin PBXFileReference section */
 		03612E5E293E76CC00E52653 /* URL+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+Extensions.swift"; sourceTree = "<group>"; };
+		03D911AF294255B700A0F379 /* MetalPointCloudView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MetalPointCloudView.swift; path = LiDARDepth/Views/Metal/MetalPointCloudView.swift; sourceTree = SOURCE_ROOT; };
+		03D911B129425CD200A0F379 /* MyPointCloudView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyPointCloudView.swift; sourceTree = "<group>"; };
 		03DC229429415F8600F01EB9 /* CVPixelBufferExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVPixelBufferExtension.swift; sourceTree = "<group>"; };
 		03DC2296294193B100F01EB9 /* GalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryView.swift; sourceTree = "<group>"; };
 		0C34ECABC9005D93C0DF4297 /* LICENSE.txt */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
@@ -132,6 +136,7 @@
 			isa = PBXGroup;
 			children = (
 				C444DFC127C4306D000D8883 /* Shaders */,
+				03D911AF294255B700A0F379 /* MetalPointCloudView.swift */,
 				AE5D416E2756041300B2513E /* MetalEnvironment.swift */,
 				AEAC8EBA272914AA001CC1D5 /* MetalContentView.swift */,
 				AE921D37270D7B41000E95C6 /* MetalTextureView.swift */,
@@ -150,6 +155,7 @@
 				AE2C81C827396765001BDCC7 /* View+Extensions.swift */,
 				03612E5E293E76CC00E52653 /* URL+Extensions.swift */,
 				AEC8871A272EAFF200ED6FCC /* Metal */,
+				03D911B129425CD200A0F379 /* MyPointCloudView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -262,6 +268,7 @@
 				AEAC8EBD27291512001CC1D5 /* CVPixelBuffer+Extension.swift in Sources */,
 				AE9AD78D270ECD01001218B2 /* CameraController.swift in Sources */,
 				AE9AD789270ECC86001218B2 /* shaders.metal in Sources */,
+				03D911B0294255B700A0F379 /* MetalPointCloudView.swift in Sources */,
 				AE2C81C62739620E001BDCC7 /* MetalTextureViewColor.swift in Sources */,
 				03DC229529415F8600F01EB9 /* CVPixelBufferExtension.swift in Sources */,
 				AE5D416F2756041300B2513E /* MetalEnvironment.swift in Sources */,
@@ -269,6 +276,7 @@
 				AE2C81C427396203001BDCC7 /* MetalTextureColorThresholdDepth.swift in Sources */,
 				AE2C81C927396765001BDCC7 /* View+Extensions.swift in Sources */,
 				AEC8871D272ED13C00ED6FCC /* ZoomOnTap.swift in Sources */,
+				03D911B229425CD200A0F379 /* MyPointCloudView.swift in Sources */,
 				03612E5F293E76CC00E52653 /* URL+Extensions.swift in Sources */,
 				AE921D2C270D7B02000E95C6 /* ContentView.swift in Sources */,
 				AED300A5271D6D18008F6007 /* CameraManager.swift in Sources */,

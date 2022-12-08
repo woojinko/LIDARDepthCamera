@@ -61,6 +61,25 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
         return paths[0]
     }
     
+    func exifOrientationFromDeviceOrientation(deviceOrientation: UIDeviceOrientation) -> CGImagePropertyOrientation {
+        let curDeviceOrientation = deviceOrientation
+        let exifOrientation: CGImagePropertyOrientation
+
+        switch curDeviceOrientation {
+        case UIDeviceOrientation.portraitUpsideDown:  // Device oriented vertically, home button on the top
+            exifOrientation = .left
+        case UIDeviceOrientation.landscapeLeft:       // Device oriented horizontally, home button on the right
+            exifOrientation = .upMirrored
+        case UIDeviceOrientation.landscapeRight:      // Device oriented horizontally, home button on the left
+            exifOrientation = .down
+        case UIDeviceOrientation.portrait:            // Device oriented vertically, home button on the bottom
+            exifOrientation = .up
+        default:
+            exifOrientation = .up
+        }
+        return exifOrientation
+    }
+    
     // Called on every photo capture
     
     func onNewPhotoData(capturedData: CameraCapturedData) {
@@ -70,10 +89,14 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
         self.capturedData.colorCbCr = capturedData.colorCbCr
         self.capturedData.cameraIntrinsics = capturedData.cameraIntrinsics
         self.capturedData.cameraReferenceDimensions = capturedData.cameraReferenceDimensions
+        
+        // NEW CODE BEGINS
+        
         self.capturedData.capturedPhoto = capturedData.capturedPhoto
+        self.capturedData.depthData = capturedData.depthData
+
         
         let compressionQuality: CGFloat = 0.9
-        
         
         let url = getDocumentsDirectory().appendingPathComponent("image.jpg")
         
@@ -81,13 +104,29 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
         
         guard let imageData = self.capturedData.capturedPhoto?.fileDataRepresentation() else { return}
         let imageAsUIImage = UIImage(data: imageData)
-        let dataUIImage = imageAsUIImage?.jpegData(compressionQuality: compressionQuality)
-        try? dataUIImage?.write(to: url)
+        
+//        let dataUIImage = imageAsUIImage?.jpegData(compressionQuality: compressionQuality)
+//        try? dataUIImage?.write(to: url)
+//        
+
+        let depthData = self.capturedData.depthData!
+        let depthOrientation = exifOrientationFromDeviceOrientation(deviceOrientation: orientation)
         
         
-        // FROM RECAPTURE UNIVERSAL
-        // let data = image.jpegData(compressionQuality: compressionQuality)
-        // try? data?.write(to: url)
+        let depthDataMap = depthData.applyingExifOrientation(depthOrientation).depthDataMap
+
+        // do I need this?
+//        depthDataMap.normalize()
+
+        let ciImage = CIImage(cvPixelBuffer: depthDataMap)
+        let depthAsUIImage = UIImage(ciImage: ciImage)
+
+        let depthUIImage = depthAsUIImage.jpegData(compressionQuality: compressionQuality)
+        try? depthUIImage?.write(to: url)
+        
+        
+        // NEW CODE ENDS
+        
         waitingForCapture = false
         processingCapturedResult = true
     }
@@ -113,6 +152,8 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
 class CameraCapturedData {
     
     var depth: MTLTexture?
+    var depthData: AVDepthData?
+
     var colorY: MTLTexture?
     var colorCbCr: MTLTexture?
     var cameraIntrinsics: matrix_float3x3
@@ -120,6 +161,7 @@ class CameraCapturedData {
     var capturedPhoto: AVCapturePhoto?
 
     init(depth: MTLTexture? = nil,
+         depthData: AVDepthData? = nil,
          colorY: MTLTexture? = nil,
          colorCbCr: MTLTexture? = nil,
          cameraIntrinsics: matrix_float3x3 = matrix_float3x3(),
@@ -127,6 +169,7 @@ class CameraCapturedData {
          capturedPhoto: AVCapturePhoto? = NSObject() as? AVCapturePhoto) {
         
         self.depth = depth
+        self.depthData = depthData
         self.colorY = colorY
         self.colorCbCr = colorCbCr
         self.cameraIntrinsics = cameraIntrinsics

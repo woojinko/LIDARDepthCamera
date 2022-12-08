@@ -2,12 +2,15 @@
 //  GalleryView.swift
 //  LiDARDepth
 //
+<<<<<<< HEAD
 //  Created by Matt Franchi on 12/8/22.
+
 //  Copyright © 2022 Apple. All rights reserved.
 //
 
 import SwiftUI
 
+<<<<<<< HEAD
 struct TL_Image: Codable, Identifiable {
     var id = UUID()
     let raw: Data
@@ -131,5 +134,21 @@ struct GalleryView: View {
 struct GalleryView_Previews: PreviewProvider {
     static var previews: some View {
         GalleryView()
+=======
+struct GalleryView: View {
+    @State private var blankImage = UIImage(systemName: "placeholdertext.fill")
+    
+    private var url: URL {
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        return paths[0].appendingPathComponent("image.jpg")
+    }
+
+    var body: some View {
+        Image(uiImage: blankImage ?? UIImage())
+            .resizable()
+            .onAppear {
+                url.loadImage(&blankImage)
+            }
+>>>>>>> 7a567770b02262fe9cae3d0c6bcc2dc2c0881f69
     }
 }

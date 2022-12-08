@@ -16,9 +16,9 @@ struct MetalPointCloudView: UIViewRepresentable, MetalRepresentable {
     @Binding var maxDepth: Float
     @Binding var minDepth: Float
     @Binding var scaleMovement: Float
-    
+
     var capturedData: CameraCapturedData
-    
+
     func makeCoordinator() -> MTKPointCloudCoordinator {
         MTKPointCloudCoordinator(parent: self)
     }
@@ -32,7 +32,7 @@ final class MTKPointCloudCoordinator: MTKCoordinator<MetalPointCloudView> {
         case sidewaysMovement
     }
     var currentCameraMode: CameraModes = .sidewaysMovement
-    
+
     override func preparePipelineAndDepthState() {
         guard let metalDevice = mtkView.device else { fatalError("Expected a Metal device.") }
         do {
@@ -44,7 +44,7 @@ final class MTKPointCloudCoordinator: MTKCoordinator<MetalPointCloudView> {
             pipelineDescriptor.vertexDescriptor = createMetalVertexDescriptor()
             pipelineDescriptor.depthAttachmentPixelFormat = .depth32Float
             pipelineState = try metalDevice.makeRenderPipelineState(descriptor: pipelineDescriptor)
-            
+
             let depthDescriptor = MTLDepthStencilDescriptor()
             depthDescriptor.isDepthWriteEnabled = true
             depthDescriptor.depthCompareFunction = .less
@@ -53,34 +53,34 @@ final class MTKPointCloudCoordinator: MTKCoordinator<MetalPointCloudView> {
             print("Unexpected error: \(error).")
         }
     }
-    
+
     func createMetalVertexDescriptor() -> MTLVertexDescriptor {
         let mtlVertexDescriptor: MTLVertexDescriptor = MTLVertexDescriptor()
         // Store position in `attribute[[0]]`.
         mtlVertexDescriptor.attributes[0].format = .float2
         mtlVertexDescriptor.attributes[0].offset = 0
         mtlVertexDescriptor.attributes[0].bufferIndex = 0
-        
+
         // Set stride to twice the `float2` bytes per vertex.
         mtlVertexDescriptor.layouts[0].stride = 2 * MemoryLayout<SIMD2<Float>>.stride
         mtlVertexDescriptor.layouts[0].stepRate = 1
         mtlVertexDescriptor.layouts[0].stepFunction = .perVertex
-        
+
         return mtlVertexDescriptor
     }
-    
+
     func calcCurrentPMVMatrix(viewSize: CGSize) -> matrix_float4x4 {
         let projection: matrix_float4x4 = makePerspectiveMatrixProjection(fovyRadians: Float.pi / 3.0,
                                                                           aspect: Float(viewSize.width) / Float(viewSize.height),
                                                                           nearZ: 10.0, farZ: 8000.0)
-        
+
         var orientationOrig: simd_float4x4 = simd_float4x4()
         // Since the camera stream is rotated clockwise, rotate it back.
         orientationOrig.columns.0 = [0, -1, 0, 0]
         orientationOrig.columns.1 = [-1, 0, 0, 0]
         orientationOrig.columns.2 = [0, 0, 1, 0]
         orientationOrig.columns.3 = [0, 0, 0, 1]
-        
+
         var translationOrig: simd_float4x4 = simd_float4x4()
         // Move the object forward to enhance visibility.
         translationOrig.columns.0 = [1, 0, 0, 0]
@@ -99,12 +99,12 @@ final class MTKPointCloudCoordinator: MTKCoordinator<MetalPointCloudView> {
                  staticInc = -staticInc
              }
         }
-        
+
         let sinf = sin(staticAngle)
         let cosf = cos(staticAngle)
         let sinsqr = sinf * sinf
         let cossqr = cosf * cosf
-        
+
         var translationCamera: simd_float4x4 = simd_float4x4()
         translationCamera.columns.0 = [1, 0, 0, 0]
         translationCamera.columns.1 = [0, 1, 0, 0]
@@ -127,7 +127,7 @@ final class MTKPointCloudCoordinator: MTKCoordinator<MetalPointCloudView> {
         let pmv = projection * rotationMatrix * translationCamera * translationOrig * orientationOrig
         return pmv
     }
-    
+
     override func draw(in view: MTKView) {
         guard parent.capturedData.depth != nil else {
             print("Depth data not available; skipping a draw.")

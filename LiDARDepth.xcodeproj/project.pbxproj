@@ -12,6 +12,7 @@
 		03D911B229425CD200A0F379 /* MyPointCloudView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D911B129425CD200A0F379 /* MyPointCloudView.swift */; };
 		03DC229529415F8600F01EB9 /* CVPixelBufferExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DC229429415F8600F01EB9 /* CVPixelBufferExtension.swift */; };
 		03DC2297294193B100F01EB9 /* GalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03DC2296294193B100F01EB9 /* GalleryView.swift */; };
+		1140ECA9294665BC00E707FF /* UIImage+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1140ECA8294665BC00E707FF /* UIImage+Extensions.swift */; };
 		AE2C81C3273961FF001BDCC7 /* MetalTextureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE921D37270D7B41000E95C6 /* MetalTextureView.swift */; };
 		AE2C81C427396203001BDCC7 /* MetalTextureColorThresholdDepth.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE2DD57D2732870500FAB8A5 /* MetalTextureColorThresholdDepth.swift */; };
 		AE2C81C62739620E001BDCC7 /* MetalTextureViewColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEC88718272EA8E600ED6FCC /* MetalTextureViewColor.swift */; };
@@ -36,6 +37,7 @@
 		03DC229429415F8600F01EB9 /* CVPixelBufferExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVPixelBufferExtension.swift; sourceTree = "<group>"; };
 		03DC2296294193B100F01EB9 /* GalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryView.swift; sourceTree = "<group>"; };
 		0C34ECABC9005D93C0DF4297 /* LICENSE.txt */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
+		1140ECA8294665BC00E707FF /* UIImage+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Extensions.swift"; sourceTree = "<group>"; };
 		9ED80CBFEB14F0F0F5121BC6 /* SampleCode.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = SampleCode.xcconfig; path = Configuration/SampleCode.xcconfig; sourceTree = "<group>"; };
 		AE18F046274A126C008BC9E3 /* AVFCapture.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AVFCapture.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AE18F048274A1272008BC9E3 /* CMCapture.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CMCapture.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -156,6 +158,7 @@
 				03612E5E293E76CC00E52653 /* URL+Extensions.swift */,
 				AEC8871A272EAFF200ED6FCC /* Metal */,
 				03D911B129425CD200A0F379 /* MyPointCloudView.swift */,
+				1140ECA8294665BC00E707FF /* UIImage+Extensions.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -281,6 +284,7 @@
 				AE921D2C270D7B02000E95C6 /* ContentView.swift in Sources */,
 				AED300A5271D6D18008F6007 /* CameraManager.swift in Sources */,
 				AE2C81C3273961FF001BDCC7 /* MetalTextureView.swift in Sources */,
+				1140ECA9294665BC00E707FF /* UIImage+Extensions.swift in Sources */,
 				AE921D2A270D7B02000E95C6 /* LiDARDepthApp.swift in Sources */,
 				03DC2297294193B100F01EB9 /* GalleryView.swift in Sources */,
 			);

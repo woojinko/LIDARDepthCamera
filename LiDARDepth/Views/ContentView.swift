@@ -9,6 +9,15 @@ import SwiftUI
 import MetalKit
 import Metal
 
+fileprivate extension Comparable {
+    func clamped(_ f: Self, _ t: Self)  ->  Self {
+        var r = self
+        if r < f { r = f }
+        if r > t { r = t }
+        return r
+    }
+}
+
 struct ContentView: View {
     
     @StateObject private var manager = CameraManager()
@@ -19,11 +28,31 @@ struct ContentView: View {
     
     @State private var dragHorizontalDistance = Float(0.0)
     @State private var dragVerticalDistance = Float(0.0)
-
     
+    @State private var point = CGPoint(x: 0, y: 0)
+    @State private var degrees: Double = 0
+    @State private var draging: Bool = false
+
     
     let maxRangeDepth = Float(15)
     let minRangeDepth = Float(0)
+    
+    private func onDragEndedAction(gesture: DragGesture.Value) -> Void {
+            withAnimation {
+                point = CGPoint(x: 0, y: 0)
+                degrees = 0
+            }
+            draging = false
+        }
+    
+
+    var rotateDrag: some Gesture {
+        DragGesture()
+            .onChanged { value in
+                self.dragHorizontalDistance = Float(value.translation.width)
+                self.dragVerticalDistance = Float(value.translation.height)
+            }
+    }
     
     var body: some View {
         VStack {
@@ -88,6 +117,7 @@ struct ContentView: View {
                                     dragHorizontalDistance: $dragHorizontalDistance,
                                     dragVerticalDistance: $dragVerticalDistance
                                 )
+                                .gesture(rotateDrag)
                             }){
                                 VStack{
                                     Image(systemName: "cloud").resizable().aspectRatio(contentMode: .fit).frame(maxWidth:.infinity, maxHeight: 200)

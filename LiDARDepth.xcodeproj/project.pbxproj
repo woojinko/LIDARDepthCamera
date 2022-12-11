@@ -71,6 +71,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0319E51729467B090028DEA7 /* Woojin Matt */ = {
+			isa = PBXGroup;
+			children = (
+				AE9AD78C270ECD01001218B2 /* CameraController.swift */,
+				C444DFC327C43447000D8883 /* Model */,
+				03DC229329415F6A00F01EB9 /* Kodeco */,
+			);
+			path = "Woojin Matt";
+			sourceTree = "<group>";
+		};
 		03DC229329415F6A00F01EB9 /* Kodeco */ = {
 			isa = PBXGroup;
 			children = (
@@ -102,9 +112,7 @@
 		AE921D28270D7B02000E95C6 /* LiDARDepth */ = {
 			isa = PBXGroup;
 			children = (
-				03DC229329415F6A00F01EB9 /* Kodeco */,
-				AE9AD78C270ECD01001218B2 /* CameraController.swift */,
-				C444DFC327C43447000D8883 /* Model */,
+				0319E51729467B090028DEA7 /* Woojin Matt */,
 				AEC8871B272EB01200ED6FCC /* Views */,
 				AE921D29270D7B02000E95C6 /* LiDARDepthApp.swift */,
 				AE921D2D270D7B04000E95C6 /* Assets.xcassets */,

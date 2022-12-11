@@ -21,6 +21,8 @@ class CameraController: NSObject, ObservableObject {
         case requiredFormatUnavailable
     }
     
+    
+    
     private let preferredWidthResolution = 1920
     
     private let videoQueue = DispatchQueue(label: "com.example.apple-samplecode.VideoQueue", qos: .userInteractive)
@@ -35,6 +37,8 @@ class CameraController: NSObject, ObservableObject {
     private var textureCache: CVMetalTextureCache!
     
     weak var delegate: CaptureDataReceiver?
+    
+    
     
     var isFilteringEnabled = true {
         didSet {

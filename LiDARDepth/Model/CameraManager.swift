@@ -24,6 +24,8 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
     @Published var processingCapturedResult = false
     @Published var dataAvailable = false
     
+    @ObservedObject var dataProvider = DataProvider.shared
+    
     let controller: CameraController
     var cancellables = Set<AnyCancellable>()
     var session: AVCaptureSession { controller.captureSession }
@@ -103,11 +105,15 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
 //        let URL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
         
         guard let imageData = self.capturedData.capturedPhoto?.fileDataRepresentation() else { return}
-        let imageAsUIImage = UIImage(data: imageData)
+        let imageAsUIImage = UIImage(data: imageData)!
         
 //        let dataUIImage = imageAsUIImage?.jpegData(compressionQuality: compressionQuality)
 //        try? dataUIImage?.write(to: url)
-//        
+        
+        let newImages = TL_Image(raw: imageAsUIImage.pngData()!, depth: imageAsUIImage.pngData()!)
+        let newImagesArray: [TL_Image] = [newImages]
+        let newTimelapse = Timelapse(title:"New Timelapse", images: newImagesArray)
+        dataProvider.createTimelapse(timelapse: newTimelapse)
 
         let depthData = self.capturedData.depthData!
         let depthOrientation = exifOrientationFromDeviceOrientation(deviceOrientation: orientation)

@@ -50,9 +50,6 @@ class DataProvider: ObservableObject {
             let data = try Data(contentsOf: dataSourceURL)
             var decodedTimelapses = try! decoder.decode([Timelapse].self, from: data)
             
-            for var decodedTimelapse in decodedTimelapses {
-                decodedTimelapse.images = try! decoder.decode([TL_Image].self, from:data)
-            }
             
             return decodedTimelapses
         } catch {
@@ -64,7 +61,8 @@ class DataProvider: ObservableObject {
     private func saveTimelapses() {
         do {
             let encoder = PropertyListEncoder()
-            let data = try encoder.encode(allTimelapses)
+            var data = try encoder.encode(allTimelapses)
+            
             try data.write(to: dataSourceURL)
         } catch {
             
@@ -105,28 +103,34 @@ struct GalleryView: View {
     
     
     var body: some View {
-        NavigationView {
-            List {
-                
-                ForEach(dataProvider.allTimelapses) { timelapse in
+        
+        GeometryReader { geometry in
+            
+            NavigationView {
+                List {
                     
-                    LazyVGrid(columns: viewColumns) {
+                    ForEach(dataProvider.allTimelapses) { timelapse in
                         
-                        Text("\(timelapse.title)")
-                            .font(.headline)
-                        
-                        Image(uiImage: (UIImage(data: timelapse.images[0].raw)!))
-                        
-                        
+                        LazyVGrid(columns: viewColumns) {
+                            
+                            Text("\(timelapse.title)")
+                                .font(.headline)
+                            
+                            Image(uiImage: (UIImage(data: timelapse.images[0].raw)!))
+                                .resizable()
+                                .frame(width: geometry.size.width * 0.3, height: geometry.size.height * 0.3)
+                            
+                            
+                            
+                        }
                         
                     }
                     
                 }
-                
             }
+            .navigationTitle(Text("Timelapses"))
+            .listStyle(InsetListStyle())
         }
-        .navigationTitle(Text("Timelapses"))
-        .listStyle(InsetListStyle())
     }
 }
 

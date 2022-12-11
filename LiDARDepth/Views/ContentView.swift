@@ -25,6 +25,17 @@ struct Camera: Identifiable, Hashable {
 }
 
 
+struct ScaleButtonStyle: ButtonStyle {
+    let geometry: GeometryProxy
+    
+    func makeBody(configuration: Self.Configuration) -> some View {
+        configuration.label
+            .foregroundColor(.blue)
+            .frame(width: geometry.size.width * 0.06, height: geometry.size.width * 0.06)
+            .scaleEffect(configuration.isPressed ? 1.2 : 1)
+    }
+}
+
 
 
 struct ContentView: View {
@@ -111,8 +122,14 @@ struct ContentView: View {
                                 manager.startPhotoCapture()
                             } label: {
                                 Image(systemName: manager.processingCapturedResult ? "play.circle" : "camera.circle")
+                                    .resizable()
+                                    .frame(width: geometry.size.width * 0.12, height: geometry.size.width * 0.12)
                                     .font(.largeTitle)
                             }
+                            .buttonStyle(ScaleButtonStyle(geometry: geometry))
+                            
+                            
+                            Spacer()
                             
                             Button {
                                 
@@ -120,6 +137,8 @@ struct ContentView: View {
                                 
                             } label: {
                                 Image(systemName: "checkmark.circle")
+                                    .resizable()
+                                    .frame(width: geometry.size.width * 0.12, height: geometry.size.width * 0.12)
                                     .font(.largeTitle)
                             }
                             .alert("Timelapse Name", isPresented: $timelapseNamingAlert, actions: {
@@ -139,13 +158,15 @@ struct ContentView: View {
                                 
                                 
                             )
+                            .buttonStyle(ScaleButtonStyle(geometry: geometry))
                         }
-                        .position(x: geometry.size.width / 2, y: geometry.size.height * 0.05)
+                        .frame(width: geometry.size.width * 0.88, alignment: .center)
+                        .position(x: geometry.size.width / 2, y: geometry.size.height * 0.95)
                         
                         
                         VStack {
                             Toggle(isOn: $pointCloudMode) {
-                                Text("Hello")
+                                
                             }
                             .toggleStyle(.switch)
                         }
@@ -161,7 +182,9 @@ struct ContentView: View {
                             
                             NavigationLink(value: gallery) {
                                 HStack {
-                                    Text("Gallery")
+                                    Image(systemName: "photo.stack.fill")
+                                        .resizable()
+                                        .frame(width:geometry.size.width * 0.07, height: geometry.size.width * 0.07)
                                         .font(.title3)
                                 }
                             }
@@ -170,7 +193,9 @@ struct ContentView: View {
                             
                             NavigationLink(value: settings) {
                                 HStack {
-                                    Text("Settings")
+                                    Image(systemName: "gearshape.fill")
+                                        .resizable()
+                                        .frame(width:geometry.size.width * 0.07, height: geometry.size.width * 0.07)
                                         .font(.title3)
                                 }
                             }
@@ -181,8 +206,13 @@ struct ContentView: View {
                         
                         .frame(width: geometry.size.width * 0.4, height: geometry.size.height * 0.03, alignment: .center)
                         .padding()
-                        .foregroundColor(.black.opacity(0.8))
+                        .overlay {
+                            
+                        }
+                        
+                        .foregroundColor(.black.opacity(1))
                         .background(Color.white.opacity(0.5))
+                        .clipShape(RoundedRectangle(cornerRadius: geometry.size.width * 0.02))
                         .position(x: geometry.size.width * 0.5, y: geometry.size.height * 0.95)
                         
                         .navigationDestination(for: Camera.self) { camera in
@@ -220,6 +250,7 @@ struct ContentView: View {
                 
                 
             }
+            .ignoresSafeArea(edges:[.top, .bottom])
         }
     }
 }

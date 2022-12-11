@@ -32,17 +32,15 @@ struct TimelapseView: View {
                             .frame(width: geometry.size.width * 0.5, height: geometry.size.height * 0.5, alignment: .center)
                             //.opacity(Double(1 - (timeline - (index+1) * 10)/10))
                             .zIndex(Double(timelapse.images.count - index))
-                            .opacity(1.0 - (Double(timeline - (Double(index) * 10.0))/10.0))
+                            .opacity(1.0 - (Double(timeline - (Double(index) * 30.0))/30.0))
                                
                     }
                 }
-                .onChange(of: timeline) { newTimeline in
-                    print((1.0 - (Double(timeline - (Double(0) * 10.0))/10.0)))
-                }
+                
                 
                 Slider(
                     value: $timeline,
-                    in: 0...(Double(timelapse.images.count) * 10.0),
+                    in: 0...(Double(timelapse.images.count) * 30.0),
                     step: 1
                 ) {
                     Text("Timeline")

@@ -175,17 +175,7 @@ struct ContentView: View {
                                 }
                             }
                             
-                            Spacer()
-                            NavigationLink(destination: {
-                                
-                            }){
-                                HStack{
-                                    Text("My Point Cloud")
-                                        .font(.title3)
-                                }
-                            }
-                            .aspectRatio(calcAspect(orientation: viewOrientation, texture: manager.capturedData.depth), contentMode: .fit)
-
+        
                             
                         }
                         

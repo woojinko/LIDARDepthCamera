@@ -10,7 +10,7 @@
 
 import SwiftUI
 
-struct TL_Image: Codable, Identifiable {
+struct TL_Image: Codable, Identifiable, Hashable {
     var id = UUID()
     let raw: Data
     let depth: Data
@@ -21,7 +21,7 @@ struct TL_Image: Codable, Identifiable {
     
 }
 
-struct Timelapse: Codable, Identifiable {
+struct Timelapse: Codable, Identifiable, Hashable  {
     var id = UUID()
     let title: String
     var images: [TL_Image]

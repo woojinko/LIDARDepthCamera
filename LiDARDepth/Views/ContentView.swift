@@ -35,6 +35,9 @@ struct ContentView: View {
     @State private var minDepth = Float(0.0)
     @State private var scaleMovement = Float(1.0)
     
+    @State private var timelapseNamingAlert: Bool = false
+    @State private var timelapseName: String = ""
+    
     @State var gallery = Gallery(name: "gallery")
     
     @State var settings = Settings(name: "settings")
@@ -75,6 +78,32 @@ struct ContentView: View {
                                 Image(systemName: manager.processingCapturedResult ? "play.circle" : "camera.circle")
                                     .font(.largeTitle)
                             }
+                            
+                            Button {
+                                
+                                timelapseNamingAlert.toggle()
+                                
+                            } label: {
+                                Image(systemName: "checkmark.circle")
+                                    .font(.largeTitle)
+                            }
+                            .alert("Timelapse Name", isPresented: $timelapseNamingAlert, actions: {
+                                TextField("Name", text: $timelapseName)
+                                
+                                Button("Save", action: {
+                                    manager.startPhotoCapture()
+                                })
+                                Button("Cancel", action: {
+                                    
+                                })
+                            },
+                                   message: {
+                                Text("Please enter a name for your timelapse.")
+                            }
+                            
+                                
+                                
+                            )
                         }
                         .position(x: geometry.size.width / 2, y: geometry.size.height * 0.05)
                         

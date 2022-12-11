@@ -104,34 +104,44 @@ struct GalleryView: View {
     
     var body: some View {
         
+        
+        
         GeometryReader { geometry in
             
-            NavigationView {
-                List {
-                    
-                    ForEach(dataProvider.allTimelapses) { timelapse in
-                        
-                        LazyVGrid(columns: viewColumns) {
+            let columns = [
+                GridItem(.adaptive(minimum: geometry.size.width * 0.3))
+                ]
+            
+            ScrollView {
+                LazyVGrid(columns: columns) {
+                        ForEach(dataProvider.allTimelapses, id: \.self) { timelapse in
                             
-                            VStack {
+                            NavigationLink(value: timelapse) {
                                 
-                                Text("\(timelapse.title)")
-                                    .font(.headline)
-                                
-                                Image(uiImage: (UIImage(data: timelapse.images[0].raw)!))
-                                    .resizable()
-                                    .frame(width: geometry.size.width * 0.3, height: geometry.size.height * 0.3)
+                                VStack {
+                                    Image(uiImage: UIImage(data: timelapse.images[0].raw)!)
+                                        .resizable()
+                                        .frame(width: geometry.size.width * 0.28, height: geometry.size.height * 0.28, alignment: .center)
+                                    
+                                    Text(timelapse.title)
+                                        .font(.body)
+                                    
+                                }
                                 
                             }
                             
                         }
                         
                     }
-                    
                 }
+                .navigationTitle("Timelapses")
+                .navigationDestination(for: Timelapse.self) { t in
+                    TimelapseView(timelapse: t)
             }
-            .navigationTitle(Text("Timelapses"))
-            //.listStyle(InsetListStyle())
+            
+            
+            
+           
         }
     }
 }

@@ -9,13 +9,32 @@
 import SwiftUI
 
 struct TimelapseView: View {
+    
+    var timelapse: Timelapse
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        
+        GeometryReader { geometry in
+            
+            Text(timelapse.title)
+            ScrollView(.horizontal) {
+                HStack {
+                    ForEach(timelapse.images, id: \.self) { tl_image in
+                        
+                        Image(uiImage: UIImage(data: tl_image.raw)!)
+                            .resizable()
+                            .frame(width: geometry.size.width * 0.5, height: geometry.size.height * 0.5, alignment: .center)
+                        
+                    }
+                }
+            }
+        }
+        
     }
 }
 
 struct TimelapseView_Previews: PreviewProvider {
     static var previews: some View {
-        TimelapseView()
+        TimelapseView(timelapse: Timelapse(title: "hello", images: []))
     }
 }

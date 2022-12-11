@@ -24,6 +24,11 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
     @Published var processingCapturedResult = false
     @Published var dataAvailable = false
     
+    @Binding var passed_isSavingTimelapse: Bool
+    @Binding var passed_timelapseName: String
+    
+    @State var currentImagesArray: [TL_Image]
+    
     @ObservedObject var dataProvider = DataProvider.shared
     
     let controller: CameraController
@@ -31,6 +36,11 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
     var session: AVCaptureSession { controller.captureSession }
     
     init() {
+        
+        _passed_isSavingTimelapse = Binding.constant(false)
+        _passed_timelapseName = Binding.constant("")
+        currentImagesArray = []
+        
         // Create an object to store the captured data for the views to present.
         capturedData = CameraCapturedData()
         controller = CameraController()
@@ -42,9 +52,15 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
             self.orientation = UIDevice.current.orientation
         }.store(in: &cancellables)
         controller.delegate = self
+        
+        
     }
     
-    func startPhotoCapture() {
+    func startPhotoCapture(isSavingTimelapse: Bool = false, timelapseName: String = "") {
+        
+        passed_isSavingTimelapse = isSavingTimelapse
+        passed_timelapseName = timelapseName
+        
         controller.capturePhoto()
         waitingForCapture = true
     }
@@ -96,45 +112,60 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
         
         self.capturedData.capturedPhoto = capturedData.capturedPhoto
         self.capturedData.depthData = capturedData.depthData
-
+        
         
         let compressionQuality: CGFloat = 0.9
         
         let url = getDocumentsDirectory().appendingPathComponent("image.jpg")
         
-//        let URL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+        //        let URL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
         
         guard let imageData = self.capturedData.capturedPhoto?.fileDataRepresentation() else { return}
         var imageAsUIImage = UIImage(data: imageData)!
         imageAsUIImage = imageAsUIImage.rotate(radians: 0) ?? imageAsUIImage
-//        let dataUIImage = imageAsUIImage?.jpegData(compressionQuality: compressionQuality)
-//        try? dataUIImage?.write(to: url)
+        //        let dataUIImage = imageAsUIImage?.jpegData(compressionQuality: compressionQuality)
+        //        try? dataUIImage?.write(to: url)
         
         
-
+        
         let depthData = self.capturedData.depthData!
         let depthOrientation = exifOrientationFromDeviceOrientation(deviceOrientation: orientation)
         
         
         let depthDataMap = depthData.applyingExifOrientation(depthOrientation).depthDataMap
-
+        
         // do I need this?
-//        depthDataMap.normalize()
-
+        //        depthDataMap.normalize()
+        
         let ciImage = CIImage(cvPixelBuffer: depthDataMap)
         var depthAsUIImage = UIImage(ciImage: ciImage)
         depthAsUIImage = depthAsUIImage.rotate(radians: 0) ?? depthAsUIImage
-
+        
         let depthUIImage = depthAsUIImage.jpegData(compressionQuality: compressionQuality)
         try? depthUIImage?.write(to: url)
         
         
-        // NEW CODE ENDS
+        let newImage = TL_Image(raw: imageAsUIImage.pngData()!, depth: depthAsUIImage.pngData()!)
         
-        let newImages = TL_Image(raw: imageAsUIImage.pngData()!, depth: depthAsUIImage.pngData()!)
-        let newImagesArray: [TL_Image] = [newImages]
-        let newTimelapse = Timelapse(title:"New Timelapse", images: newImagesArray)
-        dataProvider.createTimelapse(timelapse: newTimelapse)
+        if currentImagesArray.isEmpty {
+            currentImagesArray = [newImage]
+        }
+        else {
+            currentImagesArray.append(newImage)
+        }
+        
+        
+        
+        // NEW CODE ENDS
+        if(passed_isSavingTimelapse == true)
+        {
+            let newTimelapse = Timelapse(title:passed_timelapseName, images: currentImagesArray)
+            dataProvider.createTimelapse(timelapse: newTimelapse)
+            currentImagesArray = []
+        }
+        
+        
+        
         
         
         waitingForCapture = false

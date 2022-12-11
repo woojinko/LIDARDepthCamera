@@ -1,9 +1,9 @@
 /*
-See LICENSE folder for this sample’s licensing information.
-
-Abstract:
-The app's main user interface.
-*/
+ See LICENSE folder for this sample’s licensing information.
+ 
+ Abstract:
+ The app's main user interface.
+ */
 
 import SwiftUI
 import MetalKit
@@ -44,6 +44,18 @@ struct ContentView: View {
     
     let maxRangeDepth = Float(15)
     let minRangeDepth = Float(0)
+    
+    @State private var dragHorizontalDistance = Float(0.0)
+    @State private var dragVerticalDistance = Float(0.0)
+    
+    
+    var rotateDrag: some Gesture {
+        DragGesture()
+            .onChanged { value in
+                self.dragHorizontalDistance = Float(value.translation.width)
+                self.dragVerticalDistance = Float(value.translation.height)
+            }
+    }
     
     var body: some View {
         
@@ -99,6 +111,27 @@ struct ContentView: View {
                                         .font(.title3)
                                 }
                             }
+                            
+                            Spacer()
+                            NavigationLink(destination: {
+                                MyPointCloudView(
+                                    rotationAngle: rotationAngle,
+                                    maxDepth: $maxDepth,
+                                    minDepth: $minDepth,
+                                    scaleMovement: $scaleMovement,
+                                    capturedData: manager.capturedData,
+                                    dragHorizontalDistance: $dragHorizontalDistance,
+                                    dragVerticalDistance: $dragVerticalDistance
+                                )
+                                .gesture(rotateDrag)
+                            }){
+                                HStack{
+                                    Text("My Point Cloud")
+                                        .font(.title3)
+                                }
+                            }
+                            .aspectRatio(calcAspect(orientation: viewOrientation, texture: manager.capturedData.depth), contentMode: .fit)
+
                             
                         }
                         

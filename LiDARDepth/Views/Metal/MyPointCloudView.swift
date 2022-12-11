@@ -1,16 +1,17 @@
-/*
-See LICENSE folder for this sample’s licensing information.
-
-Abstract:
-A view that presents a rotating color point cloud with MTKPointCloudCoordinator.
-*/
+//
+//  MyPointCloudView.swift
+//  LiDARDepth
+//
+//  Created by Woojin Ko on 12/8/22.
+//  Copyright © 2022 Apple. All rights reserved.
+//
 
 import Foundation
 import SwiftUI
 import MetalKit
 import Metal
 
-struct MetalPointCloudView: UIViewRepresentable, MetalRepresentable {
+struct MyPointCloudView: UIViewRepresentable, MetalRepresentable {
     var rotationAngle: Double
 
     @Binding var maxDepth: Float
@@ -19,12 +20,15 @@ struct MetalPointCloudView: UIViewRepresentable, MetalRepresentable {
     
     var capturedData: CameraCapturedData
     
-    func makeCoordinator() -> MTKPointCloudCoordinator {
-        MTKPointCloudCoordinator(parent: self)
+    @Binding var dragHorizontalDistance: Float
+    @Binding var dragVerticalDistance: Float
+    
+    func makeCoordinator() -> MyPointCloudCoordinator {
+        MyPointCloudCoordinator(parent: self)
     }
 }
 
-final class MTKPointCloudCoordinator: MTKCoordinator<MetalPointCloudView> {
+final class MyPointCloudCoordinator: MTKCoordinator<MyPointCloudView> {
     var staticAngle: Float = 0.0
     var staticInc: Float = 0.02
     enum CameraModes {
@@ -54,6 +58,10 @@ final class MTKPointCloudCoordinator: MTKCoordinator<MetalPointCloudView> {
         }
     }
     
+    func deg2rad(_ number: Float) -> Float {
+        return number * .pi / Float(180.0)
+    }
+    
     func createMetalVertexDescriptor() -> MTLVertexDescriptor {
         let mtlVertexDescriptor: MTLVertexDescriptor = MTLVertexDescriptor()
         // Store position in `attribute[[0]]`.
@@ -69,8 +77,32 @@ final class MTKPointCloudCoordinator: MTKCoordinator<MetalPointCloudView> {
         return mtlVertexDescriptor
     }
     
+    func calcRotationQuaternion(xDistance: Float, yDistance: Float) -> simd_quatf {
+        // Calculate angle
+        let scaler = Float(10.0)
+         
+        let totalDistance = sqrt(pow(xDistance, 2) + pow(yDistance, 2))
+        let angle = deg2rad(Float(totalDistance / scaler))
+        
+        staticAngle = angle
+        
+        
+        // Calculate axis
+        var axis = SIMD3(yDistance, -1 * xDistance, Float(0.0))
+        
+        if (yDistance != 0 || xDistance != 0 ) {
+            axis = normalize(axis)
+        }
+        
+        // Calculate quaternion
+        let rotationQuaternion = simd_quatf(angle: angle, axis: axis)
+        
+        return rotationQuaternion
+
+    }
+    
     func calcCurrentPMVMatrix(viewSize: CGSize) -> matrix_float4x4 {
-        let projection: matrix_float4x4 = makePerspectiveMatrixProjection(fovyRadians: Float.pi / 3.0,
+        let projection: matrix_float4x4 = makeMyPerspectiveMatrixProjection(fovyRadians: Float.pi / 3.0,
                                                                           aspect: Float(viewSize.width) / Float(viewSize.height),
                                                                           nearZ: 10.0, farZ: 8000.0)
         
@@ -87,18 +119,6 @@ final class MTKPointCloudCoordinator: MTKCoordinator<MetalPointCloudView> {
         translationOrig.columns.1 = [0, 1, 0, 0]
         translationOrig.columns.2 = [0, 0, 1, 0]
         translationOrig.columns.3 = [0, 0, +0, 1]
-        staticAngle += staticInc
-
-        if currentCameraMode == .quarterArc {
-            // Limit camera rotation to a quarter arc, to and fro, while aimed
-            // at the center.
-            if staticAngle <= 0 {
-                 staticInc = -staticInc
-             }
-             if staticAngle > 1.2 {
-                 staticInc = -staticInc
-             }
-        }
 
         let sinf = sin(staticAngle)
         let cosf = cos(staticAngle)
@@ -112,19 +132,23 @@ final class MTKPointCloudCoordinator: MTKCoordinator<MetalPointCloudView> {
         translationCamera.columns.3 = [0, 0, 0, 1]
 
         var cameraRotation: simd_quatf
-        switch currentCameraMode {
-        case .quarterArc:
-            // Rotate the point cloud 1/4 arc.
-            translationCamera.columns.3 = [-1500 * sinf, 0, -1500 * parent.scaleMovement * sinf, 1]
-            cameraRotation = simd_quatf(angle: staticAngle, axis: SIMD3(x: 0, y: 1, z: 0))
-        case .sidewaysMovement:
-            // Randomize the camera scale.
-            translationCamera.columns.3 = [150 * sinf, -150 * cossqr, -150 * parent.scaleMovement * sinsqr, 1]
-            // Randomize the camera movement.
-            cameraRotation = simd_quatf(angle: staticAngle, axis: SIMD3(x: -sinsqr / 3, y: -cossqr / 3, z: 0))
-        }
+        
+        cameraRotation = calcRotationQuaternion(xDistance: parent.dragHorizontalDistance, yDistance: parent.dragVerticalDistance)
+
+        
+//        translationCamera.columns.3 = [150 * sinf, -150 * cossqr, -150 * parent.scaleMovement * sinsqr, 1]
+        
+        
+        translationCamera.columns.3 = [-500 * sinf, 0, -500 * parent.scaleMovement * sinf, 1]
+
+
+
+        
+        
         let rotationMatrix: matrix_float4x4 = matrix_float4x4(cameraRotation)
         let pmv = projection * rotationMatrix * translationCamera * translationOrig * orientationOrig
+        
+        // projection model view
         return pmv
     }
     
@@ -163,7 +187,7 @@ final class MTKPointCloudCoordinator: MTKCoordinator<MetalPointCloudView> {
 }
 
 /// A helper function that calculates the projection matrix given fovY in radians, aspect ration and nearZ and farZ planes.
-func makePerspectiveMatrixProjection(fovyRadians: Float, aspect: Float, nearZ: Float, farZ: Float) -> simd_float4x4 {
+func makeMyPerspectiveMatrixProjection(fovyRadians: Float, aspect: Float, nearZ: Float, farZ: Float) -> simd_float4x4 {
     let yProj: Float = 1.0 / tanf(fovyRadians * 0.5)
     let xProj: Float = yProj / aspect
     let zProj: Float = farZ / (farZ - nearZ)

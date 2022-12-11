@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct GalleryView: View {
+
+
     @State private var blankImage = UIImage(systemName: "placeholdertext.fill")
     
     private var url: URL {
@@ -21,5 +23,6 @@ struct GalleryView: View {
             .onAppear {
                 url.loadImage(&blankImage)
             }
+//            .rotationEffect(.degrees(90))
     }
 }

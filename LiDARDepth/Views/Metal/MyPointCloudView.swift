@@ -1,16 +1,17 @@
-/*
-See LICENSE folder for this sample’s licensing information.
-
-Abstract:
-A view that presents a rotating color point cloud with MTKPointCloudCoordinator.
-*/
+//
+//  MyPointCloudView.swift
+//  LiDARDepth
+//
+//  Created by Woojin Ko on 12/8/22.
+//  Copyright © 2022 Apple. All rights reserved.
+//
 
 import Foundation
 import SwiftUI
 import MetalKit
 import Metal
 
-struct MetalPointCloudView: UIViewRepresentable, MetalRepresentable {
+struct MyPointCloudView: UIViewRepresentable, MetalRepresentable {
     var rotationAngle: Double
 
     @Binding var maxDepth: Float
@@ -19,12 +20,15 @@ struct MetalPointCloudView: UIViewRepresentable, MetalRepresentable {
     
     var capturedData: CameraCapturedData
     
-    func makeCoordinator() -> MTKPointCloudCoordinator {
-        MTKPointCloudCoordinator(parent: self)
+    @Binding var dragHorizontalDistance: Float
+    @Binding var dragVerticalDistance: Float
+    
+    func makeCoordinator() -> MyPointCloudCoordinator {
+        MyPointCloudCoordinator(parent: self)
     }
 }
 
-final class MTKPointCloudCoordinator: MTKCoordinator<MetalPointCloudView> {
+final class MyPointCloudCoordinator: MTKCoordinator<MyPointCloudView> {
     var staticAngle: Float = 0.0
     var staticInc: Float = 0.02
     enum CameraModes {
@@ -69,8 +73,23 @@ final class MTKPointCloudCoordinator: MTKCoordinator<MetalPointCloudView> {
         return mtlVertexDescriptor
     }
     
+    func calcRotationQuaternion(xDistance: Float, yDistance: Float) -> simd_quatf {
+        // Calculate angle
+        let scaler = Float(1.0)
+        
+        let totalDistance = sqrt(pow(xDistance, 2) + pow(yDistance, 2))
+        let angle = totalDistance / scaler
+        
+        // Calculate axis
+        
+        
+        
+        return
+    }
+    
+    
     func calcCurrentPMVMatrix(viewSize: CGSize) -> matrix_float4x4 {
-        let projection: matrix_float4x4 = makePerspectiveMatrixProjection(fovyRadians: Float.pi / 3.0,
+        let projection: matrix_float4x4 = makeMyPerspectiveMatrixProjection(fovyRadians: Float.pi / 3.0,
                                                                           aspect: Float(viewSize.width) / Float(viewSize.height),
                                                                           nearZ: 10.0, farZ: 8000.0)
         
@@ -169,7 +188,7 @@ final class MTKPointCloudCoordinator: MTKCoordinator<MetalPointCloudView> {
 }
 
 /// A helper function that calculates the projection matrix given fovY in radians, aspect ration and nearZ and farZ planes.
-func makePerspectiveMatrixProjection(fovyRadians: Float, aspect: Float, nearZ: Float, farZ: Float) -> simd_float4x4 {
+func makeMyPerspectiveMatrixProjection(fovyRadians: Float, aspect: Float, nearZ: Float, farZ: Float) -> simd_float4x4 {
     let yProj: Float = 1.0 / tanf(fovyRadians * 0.5)
     let xProj: Float = yProj / aspect
     let zProj: Float = farZ / (farZ - nearZ)

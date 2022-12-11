@@ -17,6 +17,10 @@ struct ContentView: View {
     @State private var minDepth = Float(0.0)
     @State private var scaleMovement = Float(1.0)
     
+    @State private var dragHorizontalDistance = Float(0.0)
+    @State private var dragVerticalDistance = Float(0.0)
+
+    
     
     let maxRangeDepth = Float(15)
     let minRangeDepth = Float(0)
@@ -75,7 +79,15 @@ struct ContentView: View {
                     NavigationView {
                         VStack {
                             NavigationLink(destination: {
-                                MyPointCloudView(capturedData: manager.capturedData)
+                                MyPointCloudView(
+                                    rotationAngle: rotationAngle,
+                                    maxDepth: $maxDepth,
+                                    minDepth: $minDepth,
+                                    scaleMovement: $scaleMovement,
+                                    capturedData: manager.capturedData,
+                                    dragHorizontalDistance: $dragHorizontalDistance,
+                                    dragVerticalDistance: $dragVerticalDistance
+                                )
                             }){
                                 VStack{
                                     Image(systemName: "cloud").resizable().aspectRatio(contentMode: .fit).frame(maxWidth:.infinity, maxHeight: 200)

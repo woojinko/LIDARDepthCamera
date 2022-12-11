@@ -149,7 +149,16 @@ class CameraController: NSObject, ObservableObject {
     }
     
     func startStream() {
-        captureSession.startRunning()
+        DispatchQueue.global(qos: .userInitiated).async {
+            print("This is run on a background queue")
+            self.captureSession.startRunning()
+
+            DispatchQueue.main.async {
+                print("This is run on the main queue, after the previous code in outer block")
+            }
+        }
+        
+        
     }
     
     func stopStream() {

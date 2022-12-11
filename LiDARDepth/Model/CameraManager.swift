@@ -105,15 +105,12 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
 //        let URL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
         
         guard let imageData = self.capturedData.capturedPhoto?.fileDataRepresentation() else { return}
-        let imageAsUIImage = UIImage(data: imageData)!
-        
+        var imageAsUIImage = UIImage(data: imageData)!
+        imageAsUIImage = imageAsUIImage.rotate(radians: 0) ?? imageAsUIImage
 //        let dataUIImage = imageAsUIImage?.jpegData(compressionQuality: compressionQuality)
 //        try? dataUIImage?.write(to: url)
         
-        let newImages = TL_Image(raw: imageAsUIImage.pngData()!, depth: imageAsUIImage.pngData()!)
-        let newImagesArray: [TL_Image] = [newImages]
-        let newTimelapse = Timelapse(title:"New Timelapse", images: newImagesArray)
-        dataProvider.createTimelapse(timelapse: newTimelapse)
+        
 
         let depthData = self.capturedData.depthData!
         let depthOrientation = exifOrientationFromDeviceOrientation(deviceOrientation: orientation)
@@ -125,13 +122,20 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
 //        depthDataMap.normalize()
 
         let ciImage = CIImage(cvPixelBuffer: depthDataMap)
-        let depthAsUIImage = UIImage(ciImage: ciImage)
+        var depthAsUIImage = UIImage(ciImage: ciImage)
+        depthAsUIImage = depthAsUIImage.rotate(radians: 0) ?? depthAsUIImage
 
         let depthUIImage = depthAsUIImage.jpegData(compressionQuality: compressionQuality)
         try? depthUIImage?.write(to: url)
         
         
         // NEW CODE ENDS
+        
+        let newImages = TL_Image(raw: imageAsUIImage.pngData()!, depth: depthAsUIImage.pngData()!)
+        let newImagesArray: [TL_Image] = [newImages]
+        let newTimelapse = Timelapse(title:"New Timelapse", images: newImagesArray)
+        dataProvider.createTimelapse(timelapse: newTimelapse)
+        
         
         waitingForCapture = false
         processingCapturedResult = true

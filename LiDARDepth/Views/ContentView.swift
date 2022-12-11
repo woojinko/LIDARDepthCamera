@@ -65,6 +65,7 @@ struct ContentView: View {
                             minDepth: $minDepth,
                             capturedData: manager.capturedData
                         )
+                        //.aspectRatio(calcAspect(orientation: viewOrientation, texture: manager.capturedData.depth), contentMode: .fit)
                         
                         // Camera button
                         HStack {

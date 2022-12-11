@@ -113,14 +113,16 @@ struct GalleryView: View {
                         
                         LazyVGrid(columns: viewColumns) {
                             
-                            Text("\(timelapse.title)")
-                                .font(.headline)
-                            
-                            Image(uiImage: (UIImage(data: timelapse.images[0].raw)!))
-                                .resizable()
-                                .frame(width: geometry.size.width * 0.3, height: geometry.size.height * 0.3)
-                            
-                            
+                            VStack {
+                                
+                                Text("\(timelapse.title)")
+                                    .font(.headline)
+                                
+                                Image(uiImage: (UIImage(data: timelapse.images[0].raw)!))
+                                    .resizable()
+                                    .frame(width: geometry.size.width * 0.3, height: geometry.size.height * 0.3)
+                                
+                            }
                             
                         }
                         
@@ -129,7 +131,7 @@ struct GalleryView: View {
                 }
             }
             .navigationTitle(Text("Timelapses"))
-            .listStyle(InsetListStyle())
+            //.listStyle(InsetListStyle())
         }
     }
 }

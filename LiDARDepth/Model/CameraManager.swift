@@ -73,6 +73,12 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
         waitingForCapture = false
     }
     
+    func stopStream() {
+        controller.stopStream()
+        processingCapturedResult = false
+        waitingForCapture = false
+    }
+    
     func getDocumentsDirectory() -> URL {
         // find all possible documents directories for this user
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)

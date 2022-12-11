@@ -35,6 +35,9 @@ struct ContentView: View {
     @State private var minDepth = Float(0.0)
     @State private var scaleMovement = Float(1.0)
     
+    
+    @State private var pointCloudMode: Bool = false
+    
     @State private var timelapseNamingAlert: Bool = false
     @State private var timelapseName: String = ""
     
@@ -72,14 +75,34 @@ struct ContentView: View {
                 NavigationStack {
                     
                     ZStack {
+                        if pointCloudMode {
+                            
+                            MyPointCloudView(
+                                rotationAngle: rotationAngle,
+                                maxDepth: $maxDepth,
+                                minDepth: $minDepth,
+                                scaleMovement: $scaleMovement,
+                                capturedData: manager.capturedData,
+                                dragHorizontalDistance: $dragHorizontalDistance,
+                                dragVerticalDistance: $dragVerticalDistance
+                            )
+                            .gesture(rotateDrag)
+                            
+                        }
+                        else {
+                            
+                            // Camera view
+                            MetalTextureColorThresholdDepthView(
+                                rotationAngle: rotationAngle,
+                                maxDepth: $maxDepth,
+                                minDepth: $minDepth,
+                                capturedData: manager.capturedData
+                            )
+                            
+                        }
                         
-                        // Camera view
-                        MetalTextureColorThresholdDepthView(
-                            rotationAngle: rotationAngle,
-                            maxDepth: $maxDepth,
-                            minDepth: $minDepth,
-                            capturedData: manager.capturedData
-                        )
+                        
+                        
                         //.aspectRatio(calcAspect(orientation: viewOrientation, texture: manager.capturedData.depth), contentMode: .fit)
                         
                         // Camera button
@@ -120,6 +143,17 @@ struct ContentView: View {
                         .position(x: geometry.size.width / 2, y: geometry.size.height * 0.05)
                         
                         
+                        VStack {
+                            Toggle(isOn: $pointCloudMode) {
+                                Text("Hello")
+                            }
+                            .toggleStyle(.switch)
+                        }
+                        .rotationEffect(Angle(degrees: 270))
+                        .frame(width: geometry.size.width * 0.1, height: geometry.size.height * 0.1)
+                        .position(x: geometry.size.width * 0.9, y: geometry.size.height * 0.1)
+                        
+                        
                         
                         HStack {
                             
@@ -143,16 +177,7 @@ struct ContentView: View {
                             
                             Spacer()
                             NavigationLink(destination: {
-                                MyPointCloudView(
-                                    rotationAngle: rotationAngle,
-                                    maxDepth: $maxDepth,
-                                    minDepth: $minDepth,
-                                    scaleMovement: $scaleMovement,
-                                    capturedData: manager.capturedData,
-                                    dragHorizontalDistance: $dragHorizontalDistance,
-                                    dragVerticalDistance: $dragVerticalDistance
-                                )
-                                .gesture(rotateDrag)
+                                
                             }){
                                 HStack{
                                     Text("My Point Cloud")
@@ -183,6 +208,17 @@ struct ContentView: View {
                         }
                         
                         
+                    }
+                    .onChange(of: pointCloudMode) { newPointCloudMode in
+                        if(newPointCloudMode == true)
+                        {
+                            manager.stopStream()
+                        }
+                        else
+                        {
+                            manager.resumeStream()
+                        }
+                                
                     }
                     
                     

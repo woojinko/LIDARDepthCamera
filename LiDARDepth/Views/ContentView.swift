@@ -103,7 +103,7 @@ struct ContentView: View {
                                 TextField("Name", text: $timelapseName)
                                 
                                 Button("Save", action: {
-                                    manager.startPhotoCapture()
+                                    manager.startPhotoCapture(isSavingTimelapse: Published.init(initialValue:true), timelapseName: Published.init(initialValue: timelapseName))
                                 })
                                 Button("Cancel", action: {
                                     

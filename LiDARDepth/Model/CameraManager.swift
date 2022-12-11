@@ -24,10 +24,10 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
     @Published var processingCapturedResult = false
     @Published var dataAvailable = false
     
-    @Binding var passed_isSavingTimelapse: Bool
-    @Binding var passed_timelapseName: String
+    @Published var passed_isSavingTimelapse: Bool
+    @Published var passed_timelapseName: String
     
-    @State var currentImagesArray: [TL_Image]
+    var currentImagesArray: [TL_Image]
     
     @ObservedObject var dataProvider = DataProvider.shared
     
@@ -37,8 +37,8 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
     
     init() {
         
-        _passed_isSavingTimelapse = Binding.constant(false)
-        _passed_timelapseName = Binding.constant("")
+        _passed_isSavingTimelapse = Published.init(initialValue: false)
+        _passed_timelapseName = Published.init(initialValue: "")
         currentImagesArray = []
         
         // Create an object to store the captured data for the views to present.
@@ -56,10 +56,12 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
         
     }
     
-    func startPhotoCapture(isSavingTimelapse: Bool = false, timelapseName: String = "") {
+    func startPhotoCapture(isSavingTimelapse: Published<Bool> = Published.init(initialValue:false), timelapseName: Published<String> = Published.init(initialValue:"")) {
         
-        passed_isSavingTimelapse = isSavingTimelapse
-        passed_timelapseName = timelapseName
+        
+        _passed_isSavingTimelapse = isSavingTimelapse
+        print(_passed_isSavingTimelapse)
+        _passed_timelapseName = timelapseName
         
         controller.capturePhoto()
         waitingForCapture = true
@@ -148,12 +150,15 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
         let newImage = TL_Image(raw: imageAsUIImage.pngData()!, depth: depthAsUIImage.pngData()!)
         
         if currentImagesArray.isEmpty {
+            print("is empty")
             currentImagesArray = [newImage]
+            print(currentImagesArray.count)
         }
         else {
+            print("not empty")
             currentImagesArray.append(newImage)
+            print(currentImagesArray.count)
         }
-        
         
         
         // NEW CODE ENDS
@@ -161,6 +166,7 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
         {
             let newTimelapse = Timelapse(title:passed_timelapseName, images: currentImagesArray)
             dataProvider.createTimelapse(timelapse: newTimelapse)
+            print(newTimelapse.images.count)
             print("created timelapse")
             currentImagesArray = []
         }

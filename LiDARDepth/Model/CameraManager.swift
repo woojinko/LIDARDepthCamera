@@ -161,6 +161,7 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
         {
             let newTimelapse = Timelapse(title:passed_timelapseName, images: currentImagesArray)
             dataProvider.createTimelapse(timelapse: newTimelapse)
+            print("created timelapse")
             currentImagesArray = []
         }
         
@@ -170,6 +171,8 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
         
         waitingForCapture = false
         processingCapturedResult = true
+        
+        resumeStream()
     }
     
     func onNewData(capturedData: CameraCapturedData) {

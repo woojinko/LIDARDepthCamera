@@ -85,7 +85,7 @@ struct ContentView: View {
                         // Camera button
                         HStack {
                             Button {
-                                manager.processingCapturedResult ? manager.resumeStream() : manager.startPhotoCapture()
+                                manager.startPhotoCapture()
                             } label: {
                                 Image(systemName: manager.processingCapturedResult ? "play.circle" : "camera.circle")
                                     .font(.largeTitle)

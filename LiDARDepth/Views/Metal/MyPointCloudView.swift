@@ -201,13 +201,15 @@ final class MyPointCloudCoordinator: MTKCoordinator<MyPointCloudView> {
 
         pointCloudTexture.getBytes(&src, bytesPerRow: bytesPerRow, from: region, mipmapLevel: 0)
         
-//        for ()
-//
-//        let pointCloudGLK = GLKVector3MakeWithArray(&src)
+//        var pointCloudGLK = []
 //        
+//        for index in stride(from: 0, to: src.count, by: 4) {
+//            pointCloudGLK.append(GLKVector3(v: (src[index], src[index + 1], src[index + 2])))
+//        }
+//    
 //        let ICPInstance = ICP(pointCloudGLK, pointCloudGLK)
 //        let finalTransform = ICPInstance.iterate(maxIterations: 100, minErrorChange: 0.0)
-//        
+
         commandBuffer.commit()
     }
 }

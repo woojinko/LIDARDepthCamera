@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "kdtree",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Bersaelor/KDTree",
+      "state" : {
+        "branch" : "master",
+        "revision" : "4ab987f872778a807d9f8385bd0fed79f2222d4b"
+      }
+    }
+  ],
+  "version" : 2
+}

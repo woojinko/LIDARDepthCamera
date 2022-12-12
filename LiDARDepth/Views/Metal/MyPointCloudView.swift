@@ -10,6 +10,7 @@ import Foundation
 import SwiftUI
 import MetalKit
 import Metal
+import GLKit
 
 struct MyPointCloudView: UIViewRepresentable, MetalRepresentable {
     var rotationAngle: Double
@@ -185,21 +186,28 @@ final class MyPointCloudCoordinator: MTKCoordinator<MyPointCloudView> {
         
         //point cloud data representable?
         let pointCloudTexture = view.currentDrawable!.texture
-        
+
         // ^^ should be of type MTLtexture, so any methods within this class are applicable for data retrieval
-        
+
         let pointCloudBuffer: UnsafeRawPointer
-        
+
         let bytesPerPixel = 4
         let imageByteCount = pointCloudTexture.width * pointCloudTexture.height * pointCloudTexture.depth * bytesPerPixel
         let bytesPerRow = pointCloudTexture.width * bytesPerPixel
-        
-        var src = [UInt8](repeating: 0, count: Int(imageByteCount))
-        
+
+        var src = [Float](repeating: 0, count: Int(imageByteCount))
+
         let region = MTLRegionMake3D(0, 0, 0, pointCloudTexture.width, pointCloudTexture.height, pointCloudTexture.depth)
-        
+
         pointCloudTexture.getBytes(&src, bytesPerRow: bytesPerRow, from: region, mipmapLevel: 0)
         
+//        for ()
+//
+//        let pointCloudGLK = GLKVector3MakeWithArray(&src)
+//        
+//        let ICPInstance = ICP(pointCloudGLK, pointCloudGLK)
+//        let finalTransform = ICPInstance.iterate(maxIterations: 100, minErrorChange: 0.0)
+//        
         commandBuffer.commit()
     }
 }

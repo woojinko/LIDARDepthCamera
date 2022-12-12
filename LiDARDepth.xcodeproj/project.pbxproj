@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0319E6C42947BDD50028DEA7 /* ICP_Extended.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0319E6C32947BDD50028DEA7 /* ICP_Extended.swift */; };
+		0319E6C72947BE000028DEA7 /* KDTree in Frameworks */ = {isa = PBXBuildFile; productRef = 0319E6C62947BE000028DEA7 /* KDTree */; };
 		03612E5F293E76CC00E52653 /* URL+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03612E5E293E76CC00E52653 /* URL+Extensions.swift */; };
 		03D911B0294255B700A0F379 /* MetalPointCloudView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D911AF294255B700A0F379 /* MetalPointCloudView.swift */; };
 		03D911B229425CD200A0F379 /* MyPointCloudView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D911B129425CD200A0F379 /* MyPointCloudView.swift */; };
@@ -32,6 +34,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0319E6C32947BDD50028DEA7 /* ICP_Extended.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ICP_Extended.swift; path = LiDARDepth/ICP_Extended.swift; sourceTree = SOURCE_ROOT; };
 		03612E5E293E76CC00E52653 /* URL+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+Extensions.swift"; sourceTree = "<group>"; };
 		03D911AF294255B700A0F379 /* MetalPointCloudView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MetalPointCloudView.swift; path = LiDARDepth/Views/Metal/MetalPointCloudView.swift; sourceTree = SOURCE_ROOT; };
 		03D911B129425CD200A0F379 /* MyPointCloudView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyPointCloudView.swift; sourceTree = "<group>"; };
@@ -69,6 +72,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0319E6C72947BE000028DEA7 /* KDTree in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +82,7 @@
 		03DC229329415F6A00F01EB9 /* Kodeco */ = {
 			isa = PBXGroup;
 			children = (
+				0319E6C32947BDD50028DEA7 /* ICP_Extended.swift */,
 				03DC229429415F8600F01EB9 /* CVPixelBufferExtension.swift */,
 			);
 			path = Kodeco;
@@ -215,6 +220,9 @@
 			dependencies = (
 			);
 			name = LiDARDepth;
+			packageProductDependencies = (
+				0319E6C62947BE000028DEA7 /* KDTree */,
+			);
 			productName = DepthAPISample;
 			productReference = AE921D26270D7B02000E95C6 /* LiDARDepth.app */;
 			productType = "com.apple.product-type.application";
@@ -245,6 +253,9 @@
 				Base,
 			);
 			mainGroup = AE921D1D270D7B02000E95C6;
+			packageReferences = (
+				0319E6C52947BE000028DEA7 /* XCRemoteSwiftPackageReference "KDTree" */,
+			);
 			productRefGroup = AE921D27270D7B02000E95C6 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -290,6 +301,7 @@
 				AE2C81C3273961FF001BDCC7 /* MetalTextureView.swift in Sources */,
 				1140ECA9294665BC00E707FF /* UIImage+Extensions.swift in Sources */,
 				AE921D2A270D7B02000E95C6 /* LiDARDepthApp.swift in Sources */,
+				0319E6C42947BDD50028DEA7 /* ICP_Extended.swift in Sources */,
 				03DC2297294193B100F01EB9 /* GalleryView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -532,6 +544,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		0319E6C52947BE000028DEA7 /* XCRemoteSwiftPackageReference "KDTree" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Bersaelor/KDTree";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		0319E6C62947BE000028DEA7 /* KDTree */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0319E6C52947BE000028DEA7 /* XCRemoteSwiftPackageReference "KDTree" */;
+			productName = KDTree;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = AE921D1E270D7B02000E95C6 /* Project object */;
 }

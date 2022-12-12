@@ -182,6 +182,24 @@ final class MyPointCloudCoordinator: MTKCoordinator<MyPointCloudView> {
         encoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: Int(depthResolution.x * depthResolution.y))
         encoder.endEncoding()
         commandBuffer.present(view.currentDrawable!)
+        
+        //point cloud data representable?
+        let pointCloudTexture = view.currentDrawable!.texture
+        
+        // ^^ should be of type MTLtexture, so any methods within this class are applicable for data retrieval
+        
+        let pointCloudBuffer: UnsafeRawPointer
+        
+        let bytesPerPixel = 4
+        let imageByteCount = pointCloudTexture.width * pointCloudTexture.height * pointCloudTexture.depth * bytesPerPixel
+        let bytesPerRow = pointCloudTexture.width * bytesPerPixel
+        
+        var src = [UInt8](repeating: 0, count: Int(imageByteCount))
+        
+        let region = MTLRegionMake3D(0, 0, 0, pointCloudTexture.width, pointCloudTexture.height, pointCloudTexture.depth)
+        
+        pointCloudTexture.getBytes(&src, bytesPerRow: bytesPerRow, from: region, mipmapLevel: 0)
+        
         commandBuffer.commit()
     }
 }

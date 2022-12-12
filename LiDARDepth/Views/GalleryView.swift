@@ -119,7 +119,7 @@ struct GalleryView: View {
                             NavigationLink(value: timelapse) {
                                 
                                 VStack {
-                                    Image(uiImage: UIImage(data: timelapse.images[0].raw)!)
+                                    Image(uiImage: UIImage(data: timelapse.images[0].depth)!)
                                         .resizable()
                                         .frame(width: geometry.size.width * 0.28, height: geometry.size.height * 0.28, alignment: .center)
                                     

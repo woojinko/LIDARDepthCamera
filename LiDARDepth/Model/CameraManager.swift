@@ -10,6 +10,7 @@ import SwiftUI
 import Combine
 import simd
 import AVFoundation
+import GLKit
 
 class CameraManager: ObservableObject, CaptureDataReceiver {
 
@@ -136,21 +137,75 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
         
         
         
+        
+        
         let depthData = self.capturedData.depthData!
-        let depthOrientation = exifOrientationFromDeviceOrientation(deviceOrientation: orientation)
+        //let depthOrientation = exifOrientationFromDeviceOrientation(deviceOrientation: orientation)
         
         
-        let depthDataMap = depthData.applyingExifOrientation(depthOrientation).depthDataMap
+        //let depthDataMap = depthData.applyingExifOrientation(depthOrientation).depthDataMap
         
         // do I need this?
         //        depthDataMap.normalize()
         
-        let ciImage = CIImage(cvPixelBuffer: depthDataMap)
+        let ciImage = CIImage(cvPixelBuffer: depthData.depthDataMap)
         var depthAsUIImage = UIImage(ciImage: ciImage)
-        depthAsUIImage = depthAsUIImage.rotate(radians: 0) ?? depthAsUIImage
+        depthAsUIImage = depthAsUIImage.rotate(radians: Float.pi/2) ?? depthAsUIImage
         
         let depthUIImage = depthAsUIImage.jpegData(compressionQuality: compressionQuality)
         try? depthUIImage?.write(to: url)
+        
+        let bytesPerPixel = 2
+        let imageByteCount = self.capturedData.depth!.width * self.capturedData.depth!.height * self.capturedData.depth!.depth * bytesPerPixel
+        
+        let bytesPerRow = self.capturedData.depth!.width * bytesPerPixel
+
+        var src = [Float](repeating: 0, count: Int(imageByteCount))
+
+        let region = MTLRegionMake3D(0, 0, 0, self.capturedData.depth!.width, self.capturedData.depth!.height, self.capturedData.depth!.depth)
+
+        self.capturedData.depth!.getBytes(&src, bytesPerRow: bytesPerRow, from: region, mipmapLevel: 0)
+        
+        //print(src[0...36])
+        //print(capturedData.depthData[0...36])
+        
+        var depthArray: [GLKVector3] = []
+        
+        print(self.capturedData.depth!)
+        
+        for y in 0..<self.capturedData.depth!.height {
+            
+            for x in 0..<self.capturedData.depth!.width {
+                
+                depthArray.append(GLKVector3(v: (Float(x), Float(y), Float(src[y * self.capturedData.depth!.width + x]))))
+                
+            }
+        }
+        
+        //for i in stride(from: 0, to: 3000, by: 1) {
+            //print("\(depthArray[i].x) \(depthArray[i].y) \(depthArray[i].z)")
+
+            
+        //}
+        
+        var ICPInstance = ICP(depthArray, depthArray)
+        var finalTransform = ICPInstance.iterate(maxIterations: 100, minErrorChange: 0.0)
+        
+        print(finalTransform)
+        
+        
+//        for ()
+//
+//        let pointCloudGLK = GLKVector3MakeWithArray(&src)
+//
+//        let ICPInstance = ICP(pointCloudGLK, pointCloudGLK)
+//        let finalTransform = ICPInstance.iterate(maxIterations: 100, minErrorChange: 0.0)
+//
+        //print(src.count)
+        //print(src[20...40])
+        //print(src.count)
+        //print(src[0...36])
+        
         
         
         let newImage = TL_Image(raw: imageAsUIImage.pngData()!, depth: depthAsUIImage.pngData()!)
@@ -223,6 +278,8 @@ class CameraCapturedData {
          cameraIntrinsics: matrix_float3x3 = matrix_float3x3(),
          cameraReferenceDimensions: CGSize = .zero,
          capturedPhoto: AVCapturePhoto? = NSObject() as? AVCapturePhoto) {
+        
+        
         
         self.depth = depth
         self.depthData = depthData

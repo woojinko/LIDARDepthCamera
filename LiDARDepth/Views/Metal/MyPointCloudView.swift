@@ -184,22 +184,34 @@ final class MyPointCloudCoordinator: MTKCoordinator<MyPointCloudView> {
         encoder.endEncoding()
         commandBuffer.present(view.currentDrawable!)
         
-        //point cloud data representable?
+        /*//point cloud data representable?
         let pointCloudTexture = view.currentDrawable!.texture
 
         // ^^ should be of type MTLtexture, so any methods within this class are applicable for data retrieval
-
-        let pointCloudBuffer: UnsafeRawPointer
-
-        let bytesPerPixel = 4
-        let imageByteCount = pointCloudTexture.width * pointCloudTexture.height * pointCloudTexture.depth * bytesPerPixel
-        let bytesPerRow = pointCloudTexture.width * bytesPerPixel
+        print(parent.capturedData.depth)
+        
+        
+        let bytesPerPixel = 2
+        let imageByteCount = parent.capturedData.depth!.width * parent.capturedData.depth!.height * parent.capturedData.depth!.depth * bytesPerPixel
+        
+        let bytesPerRow = parent.capturedData.depth!.width * bytesPerPixel
 
         var src = [Float](repeating: 0, count: Int(imageByteCount))
 
-        let region = MTLRegionMake3D(0, 0, 0, pointCloudTexture.width, pointCloudTexture.height, pointCloudTexture.depth)
+        let region = MTLRegionMake3D(0, 0, 0, parent.capturedData.depth!.width, parent.capturedData.depth!.height, parent.capturedData.depth!.depth)
 
-        pointCloudTexture.getBytes(&src, bytesPerRow: bytesPerRow, from: region, mipmapLevel: 0)
+        parent.capturedData.depth!.getBytes(&src, bytesPerRow: bytesPerRow, from: region, mipmapLevel: 0)
+        
+        
+        
+        //for y in 0..<parent.capturedData.depth!.height {
+            
+            //for x in 0..<parent.capturedData.depth!.width {
+                
+                
+                
+            //}
+        //}
         
 //        for ()
 //
@@ -207,7 +219,13 @@ final class MyPointCloudCoordinator: MTKCoordinator<MyPointCloudView> {
 //        
 //        let ICPInstance = ICP(pointCloudGLK, pointCloudGLK)
 //        let finalTransform = ICPInstance.iterate(maxIterations: 100, minErrorChange: 0.0)
-//        
+//
+        //print(src.count)
+        //print(src[20...40])
+        //print(src.count)
+        //print(src[0...36])*/
+        
+        
         commandBuffer.commit()
     }
 }

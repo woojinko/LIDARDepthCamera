@@ -10,45 +10,31 @@ import KDTree
 import Accelerate
 import GLKit
 
+// Extend GLKVector3 to follow protocol required for use with KDTree
 extension GLKVector3: KDTreePoint {
-    public static func == (lhs: _GLKVector3, rhs: _GLKVector3) -> Bool {
-        return (lhs.x == rhs.x) && (lhs.y == rhs.y) && (lhs.z == rhs.z)
+    public static var dimensions: Int {
+        return 3
     }
     
-    
-    public static var dimensions = 3
+    public static func ==(lhs: GLKVector3, rhs: GLKVector3) -> Bool {
+        return GLKVector3AllEqualToVector3(lhs, rhs)
+    }
     
     public func kdDimension(_ dimension: Int) -> Double {
-        // dimension 0: x | width
-        if(dimension == 0) {
+        if dimension == 0 {
             return Double(self.x)
-        }
-        // dimension 1: y | height
-        else if(dimension == 1) {
+        } else if dimension == 1 {
             return Double(self.y)
-        }
-        // dimension 2: z | depth
-        else if(dimension == 2) {
+        } else {
             return Double(self.z)
         }
-        
-        // Failsafe
-        else {
-            return Double(self.x)
-        }
-        
     }
     
     public func squaredDistance(to otherPoint: _GLKVector3) -> Double {
-        let x = self.x - otherPoint.x
-        let y = self.y - otherPoint.y
-        let z = self.z - otherPoint.z
-        
-        return Double(x*x + y*y + z*z)
+        let distance = GLKVector3Distance(self, otherPoint)
+        let distSq = distance * distance
+        return Double(distSq)
     }
-    
-    
-    
 }
 
 

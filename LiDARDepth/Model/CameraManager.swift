@@ -169,7 +169,7 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
         //print(src[0...36])
         //print(capturedData.depthData[0...36])
         
-        var depthArray: [GLKVector3] = []
+        var depthArray = [GLKVector3]()
         
         print(self.capturedData.depth!)
         
@@ -177,7 +177,8 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
             
             for x in 0..<self.capturedData.depth!.width {
                 
-                depthArray.append(GLKVector3(v: (Float(x), Float(y), Float(src[y * self.capturedData.depth!.width + x]))))
+                //depthArray.append(GLKVector3Make(Float(x), Float(y), Float(src[y * self.capturedData.depth!.width + x])))
+                depthArray.append(GLKVector3Make(Float(x), Float(y), 2.0))
                 
             }
         }
@@ -188,8 +189,46 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
             
         //}
         
-        var ICPInstance = ICP(depthArray, depthArray)
-        var finalTransform = ICPInstance.iterate(maxIterations: 100, minErrorChange: 0.0)
+        var points = [GLKVector3]()
+        for i in 0...99 {
+            for j in 0...99 {
+                let x = (Float(i) / 10.0) - 6.0
+                let y = (Float(j) / 10.0) - 6.0
+                var z: Float = 0.0
+                let sphereSurf = (9 - (x * x) - (y * y))
+                if sphereSurf > 0 {
+                    z = sphereSurf.squareRoot() - 1.5
+                    if z < 0 { z = 0 }
+                }
+                // Add a bit of noise to Z, between -0.1 and 0.1
+                let noise = ((Float(arc4random_uniform(10000)) / 10000) * 0.2) - 0.1
+                let point = GLKVector3Make(Float(i)/10.0, Float(j)/10.0, z + noise)
+                points.append(point)
+                
+            }
+        }
+        
+        var pointsOffset = [GLKVector3]()
+        for i in 0...99 {
+            for j in 0...99 {
+                let x = (Float(i) / 10.0) - 5.0
+                let y = (Float(j) / 10.0) - 5.0
+                var z: Float = 0.0
+                let sphereSurf = (9 - (x * x) - (y * y))
+                if sphereSurf > 0 {
+                    z = sphereSurf.squareRoot() - 1.5
+                    if z < 0 { z = 0 }
+                }
+                // Add a bit of noise to Z, between -0.1 and 0.1
+                let noise = ((Float(arc4random_uniform(10000)) / 10000) * 0.2) - 0.1
+                let point = GLKVector3Make(Float(i)/10.0, Float(j)/10.0, z + noise)
+                pointsOffset.append(point)
+            }
+        }
+        
+        var depthArrayCopy = depthArray.map { $0 }
+        var ICPInstance = ICP(points, pointsOffset)
+        var finalTransform = ICPInstance.iterate(maxIterations: 10, minErrorChange: 0.0)
         
         print(finalTransform)
         

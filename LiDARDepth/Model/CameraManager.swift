@@ -182,48 +182,6 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
         }
         
         
-        
-<<<<<<< HEAD
-        for y in stride(from: 0, to: capturedData.depth!.height, by: 40) {
-            
-            for x in stride(from: 0, to: capturedData.depth!.width, by: 40) {
-                
-                depthArray_subset.append(GLKVector3Make(Float(x),Float(y),src[y * capturedData.depth!.width + x]))
-                
-            }
-            
-        }
-        
-        var test_points = [GLKVector3]()
-        
-        for y in 0..<(99) {
-            
-            for x in 0..<(99) {
-                
-                for z in 0..<(99) {
-                    
-                    test_points.append(GLKVector3Make(Float(x), Float(y), Float(z)))
-                    
-                }
-                
-                
-                
-            }
-            
-        }
-        
-        //for i in stride(from: 0, to: 3000, by: 1) {
-            //print("\(depthArray[i].x) \(depthArray[i].y) \(depthArray[i].z)")
-        // transform by inverse of intrinsic matrix
-        
-        for i in stride(from: 0, to: 3000, by: 1) {
-            print("\(depthArray[i].x) \(depthArray[i].y) \(depthArray[i].z)")
-
-            
-        }
-=======
->>>>>>> icp_realtime
-        
         var points = [GLKVector3]()
         for i in 0...99 {
             for j in 0...99 {

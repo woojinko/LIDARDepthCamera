@@ -259,12 +259,11 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
         var finalTransform = ICPInstance.iterate(maxIterations: 3, minErrorChange: 5.0)
         
         print(finalTransform)
-=======
+
 //        var ICPInstance = ICP(depthArray, depthArray)
 //        var finalTransform = ICPInstance.iterate(maxIterations: 10, minErrorChange: 0.0)
 //        
 //        print(finalTransform)
->>>>>>> 01c3103 (trying to fix rotation)
         
         
 //        for ()

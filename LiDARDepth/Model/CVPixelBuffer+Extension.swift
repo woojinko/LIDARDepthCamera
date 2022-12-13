@@ -21,4 +21,37 @@ extension CVPixelBuffer {
         return CVMetalTextureGetTexture(texture)
     }
     
+    func extract() -> [Float16] {
+        let width = CVPixelBufferGetWidth(self)
+        let height = CVPixelBufferGetHeight(self)
+        
+        CVPixelBufferLockBaseAddress(self, CVPixelBufferLockFlags(rawValue: 0))
+        
+        var type = CVPixelBufferGetPixelFormatType( self)
+
+        if (type != kCVPixelFormatType_DepthFloat16) {
+            print(type)
+            print("Wrong type");
+        }
+        
+        let floatBuffer = unsafeBitCast(CVPixelBufferGetBaseAddress(self), to: UnsafeMutablePointer<Float16>.self)
+        var floatBufferArray = [Float16]()
+        
+        
+        
+        for y in stride(from: 0, to: height, by: 1) {
+          for x in stride(from: 0, to: width, by: 1) {
+            let pixel = floatBuffer[y * width + x]
+            floatBufferArray.append(pixel)
+          }
+        }
+        
+        CVPixelBufferUnlockBaseAddress(self, CVPixelBufferLockFlags(rawValue: 0))
+        
+        return floatBufferArray
+
+    }
+    
 }
+
+

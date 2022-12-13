@@ -249,3 +249,49 @@ class ICP {
         return (U, s, v)
     }
 }
+
+func ICPFromTwoTLImages(img1: TL_Image, img2: TL_Image) {
+    
+    var pointCloud1 = [GLKVector3]()
+    var pointCloud2 = [GLKVector3]()
+    
+    assert(img1.depth_width == img2.depth_width, "mismatched widths")
+    
+    assert(img1.depth_height == img2.depth_height, "mismatched heights")
+    
+    assert (img1.depth_step == img2.depth_step, "mismatched steps")
+    
+    // at this point, all sanity checks passed
+    for y in stride(from: 0, to: img1.depth_height, by: img1.depth_step) {
+        
+        for x in stride(from: 0, to: img1.depth_width, by: img1.depth_step) {
+            
+            
+            pointCloud1.append(GLKVector3Make(Float(x), Float(y), Float(img1.depth[(y * img1.depth_width) + x])))
+            
+        }
+    }
+    
+    for y in stride(from: 0, to: img2.depth_height, by: img1.depth_step) {
+        
+        for x in stride(from: 0, to: img2.depth_width, by: img1.depth_step) {
+            
+            
+            pointCloud2.append(GLKVector3Make(Float(x), Float(y), Float(img2.depth[(y * img1.depth_width) + x])))
+            
+        }
+    }
+    
+    var ICPInstance = ICP(pointCloud1, pointCloud2)
+    var finalTransform = ICPInstance.iterate(maxIterations: 3, minErrorChange: 5.0)
+    
+    print(finalTransform)
+    
+    //return finalTransform
+    
+    
+    
+    
+    
+}
+

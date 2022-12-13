@@ -155,6 +155,7 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
         let depthUIImage = depthAsUIImage.jpegData(compressionQuality: compressionQuality)
         try? depthUIImage?.write(to: url)
         
+<<<<<<< HEAD
         
         // using depth texture data
         
@@ -162,34 +163,27 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
         let imageByteCount = self.capturedData.depth!.width * self.capturedData.depth!.height * self.capturedData.depth!.depth * bytesPerPixel
         
         let bytesPerRow = self.capturedData.depth!.width * bytesPerPixel
+=======
+>>>>>>> icp_realtime
 
-        var src = [Float](repeating: 0, count: Int(imageByteCount))
-
-        let region = MTLRegionMake3D(0, 0, 0, self.capturedData.depth!.width, self.capturedData.depth!.height, self.capturedData.depth!.depth)
-
-        self.capturedData.depth!.getBytes(&src, bytesPerRow: bytesPerRow, from: region, mipmapLevel: 0)
+        var pointCloudArray = [GLKVector3]()
+        var depthDataArray = capturedData.depthData!.depthDataMap.extract()
+        print(depthDataArray[0...48])
+        print("\(CVPixelBufferGetWidth(self.capturedData.depthData!.depthDataMap)) \(CVPixelBufferGetHeight(self.capturedData.depthData!.depthDataMap))")
         
-        //print(src[0...36])
-        //print(capturedData.depthData[0...36])
-        
-        var depthArray = [GLKVector3]()
-        
-        print(self.capturedData.depth!)
-        
-        for y in 0..<(self.capturedData.depth!.height/2) {
+        for y in stride(from: 0, to: CVPixelBufferGetHeight(self.capturedData.depthData!.depthDataMap), by: 48) {
             
-            for x in 0..<(self.capturedData.depth!.width/2) {
+            for x in stride(from: 0, to: CVPixelBufferGetWidth(self.capturedData.depthData!.depthDataMap), by: 48) {
                 
                 //depthArray.append(GLKVector3Make(Float(x), Float(y), Float(src[y * self.capturedData.depth!.width + x])))
-                depthArray.append(GLKVector3Make(Float(x), Float(y), 2.0))
+                pointCloudArray.append(GLKVector3Make(Float(x), Float(y), Float(depthDataArray[(y * CVPixelBufferGetWidth(self.capturedData.depthData!.depthDataMap)) + x])))
                 
             }
         }
         
-        assert(self.capturedData.depth!.width * self.capturedData.depth!.height * 2 == src.count, "mismatched arrays")
         
-        var depthArray_subset = [GLKVector3]()
         
+<<<<<<< HEAD
         for y in stride(from: 0, to: capturedData.depth!.height, by: 40) {
             
             for x in stride(from: 0, to: capturedData.depth!.width, by: 40) {
@@ -227,6 +221,8 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
 
             
         }
+=======
+>>>>>>> icp_realtime
         
         var points = [GLKVector3]()
         for i in 0...99 {
@@ -247,27 +243,19 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
             }
         }
         
-        var pointsOffset = [GLKVector3]()
-        for i in 0...99 {
-            for j in 0...99 {
-                let x = (Float(i) / 10.0) - 5.0
-                let y = (Float(j) / 10.0) - 5.0
-                var z: Float = 0.0
-                let sphereSurf = (9 - (x * x) - (y * y))
-                if sphereSurf > 0 {
-                    z = sphereSurf.squareRoot() - 1.5
-                    if z < 0 { z = 0 }
-                }
-                // Add a bit of noise to Z, between -0.1 and 0.1
-                let noise = ((Float(arc4random_uniform(10000)) / 10000) * 0.2) - 0.1
-                let point = GLKVector3Make(Float(i)/10.0, Float(j)/10.0, z + noise)
-                pointsOffset.append(point)
-            }
+
+        
+        
+        
+        
+        print(pointCloudArray.count)
+        for i in stride(from: 0, to: 3, by: 1) {
+            print("\(pointCloudArray[i].x) \(pointCloudArray[i].y) \(pointCloudArray[i].z)")
+
+            
         }
         
-        print(depthArray.count)
-        
-        var ICPInstance = ICP(test_points, test_points)
+        var ICPInstance = ICP(pointCloudArray, pointCloudArray)
         var finalTransform = ICPInstance.iterate(maxIterations: 3, minErrorChange: 5.0)
         
         print(finalTransform)
@@ -293,7 +281,7 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
         
         
         
-        let newImage = TL_Image(raw: imageAsUIImage.pngData()!, depth: depthAsUIImage.pngData()!)
+        let newImage = TL_Image(raw: imageAsUIImage.pngData()!, depth: depthDataArray, depth_width: CVPixelBufferGetWidth(self.capturedData.depthData!.depthDataMap), depth_height: CVPixelBufferGetHeight(self.capturedData.depthData!.depthDataMap), depth_step: 48)
         
         if currentImagesArray.isEmpty {
             print("is empty")

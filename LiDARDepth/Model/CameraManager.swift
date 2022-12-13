@@ -173,14 +173,46 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
         
         print(self.capturedData.depth!)
         
-        for y in 0..<self.capturedData.depth!.height {
+        for y in 0..<(self.capturedData.depth!.height/2) {
             
-            for x in 0..<self.capturedData.depth!.width {
+            for x in 0..<(self.capturedData.depth!.width/2) {
                 
                 //depthArray.append(GLKVector3Make(Float(x), Float(y), Float(src[y * self.capturedData.depth!.width + x])))
                 depthArray.append(GLKVector3Make(Float(x), Float(y), 2.0))
                 
             }
+        }
+        
+        assert(self.capturedData.depth!.width * self.capturedData.depth!.height * 2 == src.count, "mismatched arrays")
+        
+        var depthArray_subset = [GLKVector3]()
+        
+        for y in stride(from: 0, to: capturedData.depth!.height, by: 40) {
+            
+            for x in stride(from: 0, to: capturedData.depth!.width, by: 40) {
+                
+                depthArray_subset.append(GLKVector3Make(Float(x),Float(y),src[y * capturedData.depth!.width + x]))
+                
+            }
+            
+        }
+        
+        var test_points = [GLKVector3]()
+        
+        for y in 0..<(99) {
+            
+            for x in 0..<(99) {
+                
+                for z in 0..<(99) {
+                    
+                    test_points.append(GLKVector3Make(Float(x), Float(y), Float(z)))
+                    
+                }
+                
+                
+                
+            }
+            
         }
         
         //for i in stride(from: 0, to: 3000, by: 1) {
@@ -226,9 +258,10 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
             }
         }
         
-        var depthArrayCopy = depthArray.map { $0 }
-        var ICPInstance = ICP(points, pointsOffset)
-        var finalTransform = ICPInstance.iterate(maxIterations: 10, minErrorChange: 0.0)
+        print(depthArray.count)
+        
+        var ICPInstance = ICP(test_points, test_points)
+        var finalTransform = ICPInstance.iterate(maxIterations: 3, minErrorChange: 5.0)
         
         print(finalTransform)
         

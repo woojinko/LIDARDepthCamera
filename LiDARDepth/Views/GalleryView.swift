@@ -92,6 +92,16 @@ class DataProvider: ObservableObject {
         allTimelapses.move(fromOffsets: source, toOffset: destination)
         saveTimelapses()
     }
+    
+    func deleteImages(_ offsets: IndexSet, id: UUID) {
+        for var timelapse in allTimelapses {
+            if timelapse.id == id {
+                timelapse.images.remove(atOffsets: offsets)
+                print(timelapse.images.count)
+                saveTimelapses()
+            }
+        }
+    }
 
 }
 

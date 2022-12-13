@@ -23,6 +23,10 @@ struct MyPointCloudView: UIViewRepresentable, MetalRepresentable {
 
     @Binding var dragHorizontalDistance: Float
     @Binding var dragVerticalDistance: Float
+    
+    @Binding var cameraOrig: simd_float4x4
+    
+    
 
     func makeCoordinator() -> MyPointCloudCoordinator {
         MyPointCloudCoordinator(parent: self)
@@ -32,6 +36,9 @@ struct MyPointCloudView: UIViewRepresentable, MetalRepresentable {
 final class MyPointCloudCoordinator: MTKCoordinator<MyPointCloudView> {
     var staticAngle: Float = 0.0
     var staticInc: Float = 0.02
+    
+    var prevMVMatrix: simd_float4x4 = simd_float4x4()
+    
     enum CameraModes {
         case quarterArc
         case sidewaysMovement
@@ -114,18 +121,6 @@ final class MyPointCloudCoordinator: MTKCoordinator<MyPointCloudView> {
         orientationOrig.columns.2 = [0, 0, 1, 0]
         orientationOrig.columns.3 = [0, 0, 0, 1]
 
-        var translationOrig: simd_float4x4 = simd_float4x4()
-        // Move the object forward to enhance visibility.
-        translationOrig.columns.0 = [1, 0, 0, 0]
-        translationOrig.columns.1 = [0, 1, 0, 0]
-        translationOrig.columns.2 = [0, 0, 1, 0]
-        translationOrig.columns.3 = [0, 0, +0, 1]
-
-        let sinf = sin(staticAngle)
-        let cosf = cos(staticAngle)
-        let sinsqr = sinf * sinf
-        let cossqr = cosf * cosf
-
         var translationCamera: simd_float4x4 = simd_float4x4()
         translationCamera.columns.0 = [1, 0, 0, 0]
         translationCamera.columns.1 = [0, 1, 0, 0]
@@ -137,17 +132,51 @@ final class MyPointCloudCoordinator: MTKCoordinator<MyPointCloudView> {
         cameraRotation = calcRotationQuaternion(xDistance: parent.dragHorizontalDistance, yDistance: parent.dragVerticalDistance)
 
 
-//        translationCamera.columns.3 = [150 * sinf, -150 * cossqr, -150 * parent.scaleMovement * sinsqr, 1]
+        // create transformation that is concatenation of translation matrix that moves point (that we're trying to rotate around) to origin, rotate around that, and then move point back
+
+        translationCamera.columns.3 = [0, 0, 200, 1]
 
 
-        translationCamera.columns.3 = [-500 * sinf, 0, -500 * parent.scaleMovement * sinf, 1]
-
-
-
+        var translationCamera2: simd_float4x4 = simd_float4x4()
+        translationCamera2.columns.0 = [1, 0, 0, 0]
+        translationCamera2.columns.1 = [0, 1, 0, 0]
+        translationCamera2.columns.2 = [0, 0, 1, 0]
+        translationCamera2.columns.3 = [-1 * translationCamera.columns.3[0], -1 * translationCamera.columns.3[1], -1 * translationCamera.columns.3[2], 1]
 
 
         let rotationMatrix: matrix_float4x4 = matrix_float4x4(cameraRotation)
-        let pmv = projection * rotationMatrix * translationCamera * translationOrig * orientationOrig
+        
+        let mvMatrix = translationCamera2 * rotationMatrix * translationCamera
+        
+        
+        var negativeZTranslation: simd_float4x4 = simd_float4x4()
+        negativeZTranslation.columns.0 = [1, 0, 0, 0]
+        negativeZTranslation.columns.1 = [0, 1, 0, 0]
+        negativeZTranslation.columns.2 = [0, 0, 1, 0]
+        negativeZTranslation.columns.3 = [0, 0, 200, 1]
+        
+        // what is the point I'm rotating around? Determined by the translationcamera.columns.3 matrix
+        // after that, we can also choose to move camera additionally
+        
+        // figure out how to view this thing, control the camera
+        // using two finger scroll to change which point you're rotating around
+        // pinch gesture to move by final transform
+        
+        // try to find a reasonable set of defaults by checking console print values after moving to a good spot in the pointcloud
+        // (OR use breakpoint if that's quicker)
+        
+        // have some additional state that keeps track of where current camera pose is
+        
+        print(parent.cameraOrig)
+        
+        if (parent.dragHorizontalDistance == 0 && parent.dragVerticalDistance == 0) {
+            parent.cameraOrig = prevMVMatrix * parent.cameraOrig
+        }
+        
+        let pmv = projection * negativeZTranslation * mvMatrix * orientationOrig * parent.cameraOrig
+        
+        prevMVMatrix = mvMatrix
+        
 
         // projection model view
         return pmv

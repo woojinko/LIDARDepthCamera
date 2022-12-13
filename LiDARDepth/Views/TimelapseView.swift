@@ -27,7 +27,7 @@ struct TimelapseView: View {
                 ZStack {
                     ForEach(Array(timelapse.images.enumerated()), id: \.element) { index, tl_image in
                         
-                        Image(uiImage: UIImage(data: tl_image.raw)!)
+                        Image(uiImage: UIImage(data: tl_image.depth)!)
                             .resizable()
                             .frame(width: geometry.size.width * 0.5, height: geometry.size.height * 0.5, alignment: .center)
                             //.opacity(Double(1 - (timeline - (index+1) * 10)/10))

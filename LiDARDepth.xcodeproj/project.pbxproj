@@ -438,7 +438,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"LiDARDepth/Preview Content\"";
-				DEVELOPMENT_TEAM = 4M7U58298K;
+				DEVELOPMENT_TEAM = 5YY5JR2FBA;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = LiDARDepth/Info.plist;
@@ -464,7 +464,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.example.apple-mattfranchi-LIDARAlignDepth";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.example.apple-woojinko-LIDARAlignDepth";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -486,7 +486,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"LiDARDepth/Preview Content\"";
-				DEVELOPMENT_TEAM = 4M7U58298K;
+				DEVELOPMENT_TEAM = 5YY5JR2FBA;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = LiDARDepth/Info.plist;
@@ -512,7 +512,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.example.apple-mattfranchi-LIDARAlignDepth";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.example.apple-woojinko-LIDARAlignDepth";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;

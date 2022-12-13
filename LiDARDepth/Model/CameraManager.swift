@@ -155,6 +155,9 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
         let depthUIImage = depthAsUIImage.jpegData(compressionQuality: compressionQuality)
         try? depthUIImage?.write(to: url)
         
+        
+        // using depth texture data
+        
         let bytesPerPixel = 2
         let imageByteCount = self.capturedData.depth!.width * self.capturedData.depth!.height * self.capturedData.depth!.depth * bytesPerPixel
         
@@ -217,9 +220,13 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
         
         //for i in stride(from: 0, to: 3000, by: 1) {
             //print("\(depthArray[i].x) \(depthArray[i].y) \(depthArray[i].z)")
+        // transform by inverse of intrinsic matrix
+        
+        for i in stride(from: 0, to: 3000, by: 1) {
+            print("\(depthArray[i].x) \(depthArray[i].y) \(depthArray[i].z)")
 
             
-        //}
+        }
         
         var points = [GLKVector3]()
         for i in 0...99 {
@@ -264,6 +271,12 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
         var finalTransform = ICPInstance.iterate(maxIterations: 3, minErrorChange: 5.0)
         
         print(finalTransform)
+=======
+//        var ICPInstance = ICP(depthArray, depthArray)
+//        var finalTransform = ICPInstance.iterate(maxIterations: 10, minErrorChange: 0.0)
+//        
+//        print(finalTransform)
+>>>>>>> 01c3103 (trying to fix rotation)
         
         
 //        for ()

@@ -7,6 +7,52 @@
 //
 
 import SwiftUI
+import GLKit4
+
+func ICPFromTwoTLImages(img1: TLImage, img2: TLImage) -> GLKMatrix4 {
+    
+    var pointCloud1: [GLKVector3]()
+    var pointCloud2: [GLKVector3]()
+    
+    assert(img1.depth_width == img2.depth_width, "mismatched widths")
+    
+    assert(img1.depth_height == img2.depth_height, "mismatched heights")
+    
+    assert (img1.depth_step == img2.depth_step, "mismatched steps")
+    
+    // at this point, all sanity checks passed
+    for y in stride(from: 0, to: img1.depth_height, by: img1.depth_step) {
+        
+        for x in stride(from: 0, to: img1.depth_width, by: img1.depth_step) {
+            
+            
+            pointCloud1.append(GLKVector3Make(Float(x), Float(y), Float(depthDataArray[(y * img1.depth_width) + x])))
+            
+        }
+    }
+    
+    for y in stride(from: 0, to: img2.depth_height, by: img1.depth_step) {
+        
+        for x in stride(from: 0, to: img2.depth_width, by: img1.depth_step) {
+            
+            
+            pointCloud2.append(GLKVector3Make(Float(x), Float(y), Float(depthDataArray[(y * img1.depth_width) + x])))
+            
+        }
+    }
+    
+    var ICPInstance = ICP(pointCloud1, pointCloud2)
+    var finalTransform = ICPInstance.iterate(maxIterations: 3, minErrorChange: 5.0)
+    
+    print(finalTransform)
+    
+    return finalTransform
+    
+    
+    
+    
+    
+}
 
 struct TimelapseView: View {
     
@@ -49,6 +95,13 @@ struct TimelapseView: View {
                     
                 }
                 .frame(width: geometry.size.width * 0.9, height: geometry.size.height * 0.1, alignment: .center)
+                
+                
+                Button {
+                    Text("Calculate ICP")
+                }{
+                    
+                }
                 
             }
         }

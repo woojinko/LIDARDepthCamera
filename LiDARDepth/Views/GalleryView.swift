@@ -9,11 +9,15 @@
 //
 
 import SwiftUI
+import GLKit
 
 struct TL_Image: Codable, Identifiable, Hashable {
     var id = UUID()
     let raw: Data
-    let depth: Data
+    let depth: [Float16]
+    let depth_width: Int
+    let depth_height: Int
+    let depth_step: Int 
     
     //init(raw: UIImage) {
         //self.raw = raw.pngData()!
@@ -119,7 +123,7 @@ struct GalleryView: View {
                             NavigationLink(value: timelapse) {
                                 
                                 VStack {
-                                    Image(uiImage: UIImage(data: timelapse.images[0].depth)!)
+                                    Image(uiImage: UIImage(data: timelapse.images[0].raw)!)
                                         .resizable()
                                         .frame(width: geometry.size.width * 0.28, height: geometry.size.height * 0.28, alignment: .center)
                                     

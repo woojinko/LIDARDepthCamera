@@ -225,7 +225,7 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
         
         
         
-        let newImage = TL_Image(raw: imageAsUIImage.pngData()!, depth: depthAsUIImage.pngData()!)
+        let newImage = TL_Image(raw: imageAsUIImage.pngData()!, depth: depthDataArray, depth_width: CVPixelBufferGetWidth(self.capturedData.depthData!.depthDataMap), depth_height: CVPixelBufferGetHeight(self.capturedData.depthData!.depthDataMap), depth_step: 48)
         
         if currentImagesArray.isEmpty {
             print("is empty")

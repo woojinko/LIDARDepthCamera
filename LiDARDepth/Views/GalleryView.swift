@@ -62,6 +62,16 @@ class DataProvider: ObservableObject {
         
     }
     
+    func getTimelapse(id: UUID) -> Timelapse? {
+        var timelapses = getAllTimelapses()
+        
+        for tl in timelapses {
+            if(tl.id == id) {
+                return tl
+            }
+        }
+    }
+    
     private func saveTimelapses() {
         do {
             let encoder = PropertyListEncoder()

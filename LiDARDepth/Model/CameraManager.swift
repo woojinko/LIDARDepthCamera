@@ -155,16 +155,6 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
         let depthUIImage = depthAsUIImage.jpegData(compressionQuality: compressionQuality)
         try? depthUIImage?.write(to: url)
         
-<<<<<<< HEAD
-        
-        // using depth texture data
-        
-        let bytesPerPixel = 2
-        let imageByteCount = self.capturedData.depth!.width * self.capturedData.depth!.height * self.capturedData.depth!.depth * bytesPerPixel
-        
-        let bytesPerRow = self.capturedData.depth!.width * bytesPerPixel
-=======
->>>>>>> icp_realtime
 
         var pointCloudArray = [GLKVector3]()
         var depthDataArray = capturedData.depthData!.depthDataMap.extract()

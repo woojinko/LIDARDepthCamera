@@ -14,7 +14,7 @@ struct TimelapseView: View {
     
     @ObservedObject var dataProvider = DataProvider.shared
     
-    var timelapse: Timelapse
+    @State var timelapse: Timelapse
     
     @State private var timeline = 0.0
     @State private var isEditing: Bool = false
@@ -29,7 +29,7 @@ struct TimelapseView: View {
     
     init(timelapse: Timelapse)
     {
-        self.timelapse = timelapse
+        _timelapse = State(initialValue: timelapse)
         let s = [Bool](repeating: false, count: timelapse.images.count)
         //print(s)
         _selected = State(initialValue: s)
@@ -51,6 +51,7 @@ struct TimelapseView: View {
                         Button {
                             
                             dataProvider.deleteImages(selectedIdxs, id: timelapse.id)
+                            timelapse = dataProvider.getTimelapse(id: timelapse.id) ?? timelapse
                             
                         } label: {
                             Text("Delete")

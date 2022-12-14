@@ -67,6 +67,8 @@ struct ContentView: View {
     
     @State private var cameraOrig: simd_float4x4 = simd_float4x4(columns: ([1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]))
     
+    @State private var prevMVMatrix: simd_float4x4 = simd_float4x4(columns: ([1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]))
+    
     var rotateDrag: some Gesture {
         DragGesture()
             .onChanged { value in
@@ -74,8 +76,8 @@ struct ContentView: View {
                 self.dragVerticalDistance = Float(value.translation.height)
             }
             .onEnded { value in
-                self.dragHorizontalDistance = Float(0)
-                self.dragVerticalDistance = Float(0)
+                self.dragHorizontalDistance = Float(0.0)
+                self.dragVerticalDistance = Float(0.0)
             }
     }
     
@@ -101,7 +103,8 @@ struct ContentView: View {
                                 capturedData: manager.capturedData,
                                 dragHorizontalDistance: $dragHorizontalDistance,
                                 dragVerticalDistance: $dragVerticalDistance,
-                                cameraOrig: $cameraOrig
+                                cameraOrig: $cameraOrig,
+                                prevMVMatrix: $prevMVMatrix
                             )
                             .gesture(rotateDrag)
                             

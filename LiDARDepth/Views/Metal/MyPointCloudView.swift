@@ -25,6 +25,7 @@ struct MyPointCloudView: UIViewRepresentable, MetalRepresentable {
     @Binding var dragVerticalDistance: Float
     
     @Binding var cameraOrig: simd_float4x4
+    @Binding var prevMVMatrix: simd_float4x4
     
     
 
@@ -36,8 +37,6 @@ struct MyPointCloudView: UIViewRepresentable, MetalRepresentable {
 final class MyPointCloudCoordinator: MTKCoordinator<MyPointCloudView> {
     var staticAngle: Float = 0.0
     var staticInc: Float = 0.02
-    
-    var prevMVMatrix: simd_float4x4 = simd_float4x4()
     
     enum CameraModes {
         case quarterArc
@@ -134,7 +133,13 @@ final class MyPointCloudCoordinator: MTKCoordinator<MyPointCloudView> {
 
         // create transformation that is concatenation of translation matrix that moves point (that we're trying to rotate around) to origin, rotate around that, and then move point back
 
-        translationCamera.columns.3 = [0, 0, 200, 1]
+//        translationCamera.columns.3 = [0, 0, 200, 1]
+        
+        
+        var cameraTranslation: simd_quatf
+
+        cameraTranslation = calcTranslationMatrix()
+        
 
 
         var translationCamera2: simd_float4x4 = simd_float4x4()
@@ -167,15 +172,14 @@ final class MyPointCloudCoordinator: MTKCoordinator<MyPointCloudView> {
         
         // have some additional state that keeps track of where current camera pose is
         
-        print(parent.cameraOrig)
-        
+
         if (parent.dragHorizontalDistance == 0 && parent.dragVerticalDistance == 0) {
-            parent.cameraOrig = prevMVMatrix * parent.cameraOrig
+            parent.cameraOrig = parent.prevMVMatrix * parent.cameraOrig
         }
         
-        let pmv = projection * negativeZTranslation * mvMatrix * orientationOrig * parent.cameraOrig
+        let pmv = projection * negativeZTranslation * mvMatrix * parent.cameraOrig * orientationOrig
         
-        prevMVMatrix = mvMatrix
+        parent.prevMVMatrix = mvMatrix
         
 
         // projection model view

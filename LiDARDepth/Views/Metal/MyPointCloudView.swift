@@ -128,7 +128,7 @@ final class MyPointCloudCoordinator: MTKCoordinator<MyPointCloudView> {
             ratio = -1.0 * Float(zScale / 1.0)
         }
 
-        let directionScaler = Float(3.0)
+        let directionScaler = Float(2.0)
 
         let zMovement = directionScaler * ratio * translationScaler
 

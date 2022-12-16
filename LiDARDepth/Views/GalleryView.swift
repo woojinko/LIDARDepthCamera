@@ -70,6 +70,7 @@ class DataProvider: ObservableObject {
                 return tl
             }
         }
+        return nil
     }
     
     private func saveTimelapses() {

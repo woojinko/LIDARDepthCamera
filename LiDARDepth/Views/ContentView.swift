@@ -8,6 +8,7 @@
 import SwiftUI
 import MetalKit
 import Metal
+import SwiftUIJoystick
 
 struct Gallery: Identifiable, Hashable {
     var id = UUID()
@@ -65,9 +66,27 @@ struct ContentView: View {
     @State private var dragHorizontalDistance = Float(0.0)
     @State private var dragVerticalDistance = Float(0.0)
     
-    @State private var cameraOrig: simd_float4x4 = simd_float4x4(columns: ([1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]))
+    @State private var cameraOrig: simd_float4x4 = simd_float4x4(columns:
+                                                                    ([1, 0, 0, 0],
+                                                                     [0, 1, 0, 0],
+                                                                     [0, 0, 1, 0],
+                                                                     [0, 0, 0, 1]))
     
-    @State private var prevMVMatrix: simd_float4x4 = simd_float4x4(columns: ([1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]))
+    @State private var prevMVMatrix: simd_float4x4 = simd_float4x4(columns:
+                                                                    ([1, 0, 0, 0],
+                                                                     [0, 1, 0, 0],
+                                                                     [0, 0, 1, 0],
+                                                                     [0, 0, 0, 1]))
+    
+    @State private var prevTranslation: simd_float4x4 = simd_float4x4(columns:
+                                                                        ([1, 0, 0, 0],
+                                                                         [0, 1, 0, 0],
+                                                                         [0, 0, 1, 0],
+                                                                         [0, 0, 0, 1]))
+    
+    @StateObject private var monitor = JoystickMonitor()
+    private let draggableDiameter: CGFloat = 100
+    
     
     var rotateDrag: some Gesture {
         DragGesture()
@@ -78,6 +97,18 @@ struct ContentView: View {
             .onEnded { value in
                 self.dragHorizontalDistance = Float(0.0)
                 self.dragVerticalDistance = Float(0.0)
+            }
+    }
+    
+    @State var scale: CGFloat = 1.0
+    
+    
+    var zDirectionMagnify: some Gesture {
+        MagnificationGesture()
+            .onChanged { value in
+                self.scale = value
+            } .onEnded { value in
+                scale = 1.0
             }
     }
     
@@ -94,7 +125,26 @@ struct ContentView: View {
                     
                     ZStack {
                         if pointCloudMode {
-                            
+                            //                            VStack(alignment: .leading, spacing: 0) {
+                            //                                Joystick(monitor: monitor, width: draggableDiameter, shape: .circle)
+                            //
+                            //                                MyPointCloudView(
+                            //                                    rotationAngle: rotationAngle,
+                            //                                    maxDepth: $maxDepth,
+                            //                                    minDepth: $minDepth,
+                            //                                    scaleMovement: $scaleMovement,
+                            //                                    capturedData: manager.capturedData,
+                            //                                    dragHorizontalDistance: $dragHorizontalDistance,
+                            //                                    dragVerticalDistance: $dragVerticalDistance,
+                            //                                    cameraOrig: $cameraOrig,
+                            //                                    prevMVMatrix: $prevMVMatrix,
+                            //                                    prevTranslation: $prevTranslation,
+                            //                                    monitor: monitor,
+                            //                                    zScale: $scale
+                            //                                )
+                            //                                .gesture(rotateDrag)
+                            //                                .gesture(zDirectionMagnify)
+                            //                            }
                             MyPointCloudView(
                                 rotationAngle: rotationAngle,
                                 maxDepth: $maxDepth,
@@ -104,9 +154,16 @@ struct ContentView: View {
                                 dragHorizontalDistance: $dragHorizontalDistance,
                                 dragVerticalDistance: $dragVerticalDistance,
                                 cameraOrig: $cameraOrig,
-                                prevMVMatrix: $prevMVMatrix
+                                prevMVMatrix: $prevMVMatrix,
+                                prevTranslation: $prevTranslation,
+                                monitor: monitor,
+                                zScale: $scale
                             )
                             .gesture(rotateDrag)
+                            .gesture(zDirectionMagnify)
+                            
+                            Joystick(monitor: monitor, width: draggableDiameter, shape: .circle)
+                                .position(x: 50, y: 50)
                             
                         }
                         else {
@@ -163,9 +220,9 @@ struct ContentView: View {
                                    message: {
                                 Text("Please enter a name for your timelapse.")
                             }
-                            
-                                
-                                
+                                   
+                                   
+                                   
                             )
                             .buttonStyle(ScaleButtonStyle(geometry: geometry))
                         }
@@ -209,7 +266,7 @@ struct ContentView: View {
                                 }
                             }
                             
-        
+                            
                             
                         }
                         
@@ -247,7 +304,7 @@ struct ContentView: View {
                         {
                             manager.resumeStream()
                         }
-                                
+                        
                     }
                     
                     

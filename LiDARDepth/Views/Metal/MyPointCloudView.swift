@@ -11,6 +11,7 @@ import SwiftUI
 import MetalKit
 import Metal
 import GLKit
+import SwiftUIJoystick
 
 struct MyPointCloudView: UIViewRepresentable, MetalRepresentable {
     var rotationAngle: Double
@@ -26,8 +27,11 @@ struct MyPointCloudView: UIViewRepresentable, MetalRepresentable {
     
     @Binding var cameraOrig: simd_float4x4
     @Binding var prevMVMatrix: simd_float4x4
+    @Binding var prevTranslation: simd_float4x4
     
+    @State var monitor: JoystickMonitor
     
+    @Binding var zScale: CGFloat
 
     func makeCoordinator() -> MyPointCloudCoordinator {
         MyPointCloudCoordinator(parent: self)
@@ -107,6 +111,39 @@ final class MyPointCloudCoordinator: MTKCoordinator<MyPointCloudView> {
         return rotationQuaternion
 
     }
+    
+    func calcTranslationMatrix(monitor: JoystickMonitor, zScale: CGFloat) -> simd_float4x4 {
+        let translationScaler = Float(5.0)
+        
+        let xMovement = -1 * Float(monitor.xyPoint.x) * translationScaler
+        let yMovement = Float(monitor.xyPoint.y) * translationScaler
+        
+        var ratio: Float
+        
+        if (zScale == 1.0) {
+            ratio = Float(0.0)
+        } else if (zScale < 1.0) {
+            ratio = Float(1.0 / zScale)
+        } else {
+            ratio = -1.0 * Float(zScale / 1.0)
+        }
+
+        let directionScaler = Float(3.0)
+
+        let zMovement = directionScaler * ratio * translationScaler
+
+        print(zMovement)
+
+        
+        var translationCamera: simd_float4x4 = simd_float4x4()
+        translationCamera.columns.0 = [1, 0, 0, 0]
+        translationCamera.columns.1 = [0, 1, 0, 0]
+        translationCamera.columns.2 = [0, 0, 1, 0]
+        translationCamera.columns.3 = [xMovement, yMovement, zMovement, 1]
+        
+        return translationCamera
+        
+    }
 
     func calcCurrentPMVMatrix(viewSize: CGSize) -> matrix_float4x4 {
         let projection: matrix_float4x4 = makeMyPerspectiveMatrixProjection(fovyRadians: Float.pi / 3.0,
@@ -133,20 +170,21 @@ final class MyPointCloudCoordinator: MTKCoordinator<MyPointCloudView> {
 
         // create transformation that is concatenation of translation matrix that moves point (that we're trying to rotate around) to origin, rotate around that, and then move point back
 
-//        translationCamera.columns.3 = [0, 0, 200, 1]
+        translationCamera.columns.3 = [0, 0, 200, 1]
         
         
-        var cameraTranslation: simd_quatf
-
-        cameraTranslation = calcTranslationMatrix()
+        var cameraTranslation: simd_float4x4
         
-
+        cameraTranslation = calcTranslationMatrix(monitor: parent.monitor, zScale: parent.zScale)
 
         var translationCamera2: simd_float4x4 = simd_float4x4()
         translationCamera2.columns.0 = [1, 0, 0, 0]
         translationCamera2.columns.1 = [0, 1, 0, 0]
         translationCamera2.columns.2 = [0, 0, 1, 0]
-        translationCamera2.columns.3 = [-1 * translationCamera.columns.3[0], -1 * translationCamera.columns.3[1], -1 * translationCamera.columns.3[2], 1]
+        translationCamera2.columns.3 = [-1 * translationCamera.columns.3[0],
+                                         -1 * translationCamera.columns.3[1],
+                                         -1 * translationCamera.columns.3[2],
+                                         1]
 
 
         let rotationMatrix: matrix_float4x4 = matrix_float4x4(cameraRotation)
@@ -177,9 +215,15 @@ final class MyPointCloudCoordinator: MTKCoordinator<MyPointCloudView> {
             parent.cameraOrig = parent.prevMVMatrix * parent.cameraOrig
         }
         
-        let pmv = projection * negativeZTranslation * mvMatrix * parent.cameraOrig * orientationOrig
+        if (parent.monitor.xyPoint == CGPoint(x: 0.0, y: 0.0)) {
+            parent.cameraOrig = parent.prevTranslation * parent.cameraOrig
+        }
+        
+        
+        let pmv = projection * cameraTranslation * mvMatrix * parent.cameraOrig * orientationOrig
         
         parent.prevMVMatrix = mvMatrix
+        parent.prevTranslation = cameraTranslation
         
 
         // projection model view

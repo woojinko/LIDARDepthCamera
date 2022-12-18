@@ -88,6 +88,89 @@ final class MyPointCloudCoordinator: MTKCoordinator<MyPointCloudView> {
         return mtlVertexDescriptor
     }
 
+    func calcCurrentPMVMatrix(viewSize: CGSize) -> matrix_float4x4 {
+        let projection: matrix_float4x4 = makeMyPerspectiveMatrixProjection(fovyRadians: Float.pi / 3.0,
+                                                                          aspect: Float(viewSize.width) / Float(viewSize.height),
+                                                                          nearZ: 10.0, farZ: 8000.0)
+
+        var orientationOrig: simd_float4x4 = simd_float4x4()
+        // Since the camera stream is rotated clockwise, rotate it back.
+        orientationOrig.columns.0 = [0, -1, 0, 0]
+        orientationOrig.columns.1 = [-1, 0, 0, 0]
+        orientationOrig.columns.2 = [0, 0, 1, 0]
+        orientationOrig.columns.3 = [0, 0, 0, 1]
+
+        
+        // Create transformation that is concatenation of translation matrix that:
+        // 1) Moves point (that we're trying to rotate around) to origin
+        // 2) Rotate around that point
+        // 3) And then move that point back
+        
+        // 1)
+        var rotationOriginCamera: simd_float4x4 = simd_float4x4()
+        rotationOriginCamera.columns.0 = [1, 0, 0, 0]
+        rotationOriginCamera.columns.1 = [0, 1, 0, 0]
+        rotationOriginCamera.columns.2 = [0, 0, 1, 0]
+        rotationOriginCamera.columns.3 = [0, 0, -1000, 1]
+        
+        // 2)
+        let cameraRotation = calcRotationQuaternion(xDistance: parent.dragHorizontalDistance, yDistance: parent.dragVerticalDistance)
+        let rotationMatrix: matrix_float4x4 = matrix_float4x4(cameraRotation)
+
+        
+        // 3)
+        var rotationOriginCameraInverse: simd_float4x4 = simd_float4x4()
+        rotationOriginCameraInverse.columns.0 = [1, 0, 0, 0]
+        rotationOriginCameraInverse.columns.1 = [0, 1, 0, 0]
+        rotationOriginCameraInverse.columns.2 = [0, 0, 1, 0]
+        rotationOriginCameraInverse.columns.3 = [-1 * rotationOriginCamera.columns.3[0],
+                                         -1 * rotationOriginCamera.columns.3[1],
+                                         -1 * rotationOriginCamera.columns.3[2],
+                                         1]
+        
+        // Final MV matrix
+        let mvMatrix = rotationOriginCameraInverse * rotationMatrix * rotationOriginCamera
+        
+        // Account for translation of matrix by user input
+        let cameraTranslation = calcTranslationMatrix(monitor: parent.monitor, zScale: parent.zScale)
+
+        
+        var negativeZTranslation: simd_float4x4 = simd_float4x4()
+        negativeZTranslation.columns.0 = [1, 0, 0, 0]
+        negativeZTranslation.columns.1 = [0, 1, 0, 0]
+        negativeZTranslation.columns.2 = [0, 0, 1, 0]
+        negativeZTranslation.columns.3 = [0, 0, 200, 1]
+        
+        
+        // figure out how to view this thing, control the camera
+        // using two finger scroll to change which point you're rotating around
+        // pinch gesture to move by final transform
+        
+        // try to find a reasonable set of defaults by checking console print values after moving to a good spot in the pointcloud
+        // (OR use breakpoint if that's quicker)
+        
+        // have some additional state that keeps track of where current camera pose is
+        
+
+        if (parent.dragHorizontalDistance == 0 && parent.dragVerticalDistance == 0) {
+            parent.cameraOrig = parent.prevMVMatrix * parent.cameraOrig
+        }
+        
+        if (parent.monitor.xyPoint == CGPoint(x: 0.0, y: 0.0)) {
+            parent.cameraOrig = parent.prevTranslation * parent.cameraOrig
+        }
+        
+        
+        let pmv = projection * cameraTranslation * mvMatrix * parent.cameraOrig * orientationOrig
+        
+        parent.prevMVMatrix = mvMatrix
+        parent.prevTranslation = cameraTranslation
+        
+
+        // projection model view
+        return pmv
+    }
+    
     func calcRotationQuaternion(xDistance: Float, yDistance: Float) -> simd_quatf {
         // Calculate angle
         let scaler = Float(10.0)
@@ -143,91 +226,6 @@ final class MyPointCloudCoordinator: MTKCoordinator<MyPointCloudView> {
         
         return translationCamera
         
-    }
-
-    func calcCurrentPMVMatrix(viewSize: CGSize) -> matrix_float4x4 {
-        let projection: matrix_float4x4 = makeMyPerspectiveMatrixProjection(fovyRadians: Float.pi / 3.0,
-                                                                          aspect: Float(viewSize.width) / Float(viewSize.height),
-                                                                          nearZ: 10.0, farZ: 8000.0)
-
-        var orientationOrig: simd_float4x4 = simd_float4x4()
-        // Since the camera stream is rotated clockwise, rotate it back.
-        orientationOrig.columns.0 = [0, -1, 0, 0]
-        orientationOrig.columns.1 = [-1, 0, 0, 0]
-        orientationOrig.columns.2 = [0, 0, 1, 0]
-        orientationOrig.columns.3 = [0, 0, 0, 1]
-
-        var translationCamera: simd_float4x4 = simd_float4x4()
-        translationCamera.columns.0 = [1, 0, 0, 0]
-        translationCamera.columns.1 = [0, 1, 0, 0]
-        translationCamera.columns.2 = [0, 0, 1, 0]
-        translationCamera.columns.3 = [0, 0, 0, 1]
-
-        var cameraRotation: simd_quatf
-
-        cameraRotation = calcRotationQuaternion(xDistance: parent.dragHorizontalDistance, yDistance: parent.dragVerticalDistance)
-
-
-        // create transformation that is concatenation of translation matrix that moves point (that we're trying to rotate around) to origin, rotate around that, and then move point back
-
-        translationCamera.columns.3 = [0, 0, 200, 1]
-        
-        
-        var cameraTranslation: simd_float4x4
-        
-        cameraTranslation = calcTranslationMatrix(monitor: parent.monitor, zScale: parent.zScale)
-
-        var translationCamera2: simd_float4x4 = simd_float4x4()
-        translationCamera2.columns.0 = [1, 0, 0, 0]
-        translationCamera2.columns.1 = [0, 1, 0, 0]
-        translationCamera2.columns.2 = [0, 0, 1, 0]
-        translationCamera2.columns.3 = [-1 * translationCamera.columns.3[0],
-                                         -1 * translationCamera.columns.3[1],
-                                         -1 * translationCamera.columns.3[2],
-                                         1]
-
-
-        let rotationMatrix: matrix_float4x4 = matrix_float4x4(cameraRotation)
-        
-        let mvMatrix = translationCamera2 * rotationMatrix * translationCamera
-        
-        
-        var negativeZTranslation: simd_float4x4 = simd_float4x4()
-        negativeZTranslation.columns.0 = [1, 0, 0, 0]
-        negativeZTranslation.columns.1 = [0, 1, 0, 0]
-        negativeZTranslation.columns.2 = [0, 0, 1, 0]
-        negativeZTranslation.columns.3 = [0, 0, 200, 1]
-        
-        // what is the point I'm rotating around? Determined by the translationcamera.columns.3 matrix
-        // after that, we can also choose to move camera additionally
-        
-        // figure out how to view this thing, control the camera
-        // using two finger scroll to change which point you're rotating around
-        // pinch gesture to move by final transform
-        
-        // try to find a reasonable set of defaults by checking console print values after moving to a good spot in the pointcloud
-        // (OR use breakpoint if that's quicker)
-        
-        // have some additional state that keeps track of where current camera pose is
-        
-
-        if (parent.dragHorizontalDistance == 0 && parent.dragVerticalDistance == 0) {
-            parent.cameraOrig = parent.prevMVMatrix * parent.cameraOrig
-        }
-        
-        if (parent.monitor.xyPoint == CGPoint(x: 0.0, y: 0.0)) {
-            parent.cameraOrig = parent.prevTranslation * parent.cameraOrig
-        }
-        
-        
-        let pmv = projection * cameraTranslation * mvMatrix * parent.cameraOrig * orientationOrig
-        
-        parent.prevMVMatrix = mvMatrix
-        parent.prevTranslation = cameraTranslation
-        
-
-        // projection model view
-        return pmv
     }
 
     override func draw(in view: MTKView) {

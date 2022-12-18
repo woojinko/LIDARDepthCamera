@@ -92,54 +92,51 @@ final class MyPointCloudCoordinator: MTKCoordinator<MyPointCloudView> {
         let projection: matrix_float4x4 = makeMyPerspectiveMatrixProjection(fovyRadians: Float.pi / 3.0,
                                                                           aspect: Float(viewSize.width) / Float(viewSize.height),
                                                                           nearZ: 10.0, farZ: 8000.0)
-
-        var orientationOrig: simd_float4x4 = simd_float4x4()
+        
         // Since the camera stream is rotated clockwise, rotate it back.
-        orientationOrig.columns.0 = [0, -1, 0, 0]
-        orientationOrig.columns.1 = [-1, 0, 0, 0]
-        orientationOrig.columns.2 = [0, 0, 1, 0]
-        orientationOrig.columns.3 = [0, 0, 0, 1]
-
+        let orientationOrig: simd_float4x4 = simd_float4x4(columns:
+                                                            ([0, -1, 0, 0],
+                                                            [-1, 0, 0, 0],
+                                                            [0, 0, 1, 0],
+                                                            [0, 0, 0, 1]))
         
         // Create transformation that is concatenation of translation matrix that:
-        // 1) Moves point (that we're trying to rotate around) to origin
-        // 2) Rotate around that point
+        // 1) Moves point (that we're trying to transform relative to) to origin
+        // 2) Rotate/translate around that point
         // 3) And then move that point back
         
         // 1)
-        var rotationOriginCamera: simd_float4x4 = simd_float4x4()
-        rotationOriginCamera.columns.0 = [1, 0, 0, 0]
-        rotationOriginCamera.columns.1 = [0, 1, 0, 0]
-        rotationOriginCamera.columns.2 = [0, 0, 1, 0]
-        rotationOriginCamera.columns.3 = [0, 0, -1000, 1]
-        
+        let rotationOriginCamera: simd_float4x4 = simd_float4x4(columns:
+                                                                    ([1, 0, 0, 0],
+                                                                     [0, 1, 0, 0],
+                                                                     [0, 0, 1, 0],
+                                                                     [0, 0, -1000, 1]))
         // 2)
-        let cameraRotation = calcRotationQuaternion(xDistance: parent.dragHorizontalDistance, yDistance: parent.dragVerticalDistance)
-        let rotationMatrix: matrix_float4x4 = matrix_float4x4(cameraRotation)
-
+        // Rotation controlled by one-finger swipe gesture (x, y) from user
+        let cameraRotation = calcRotationMatrix(xDistance: parent.dragHorizontalDistance, yDistance: parent.dragVerticalDistance)
         
-        // 3)
-        var rotationOriginCameraInverse: simd_float4x4 = simd_float4x4()
-        rotationOriginCameraInverse.columns.0 = [1, 0, 0, 0]
-        rotationOriginCameraInverse.columns.1 = [0, 1, 0, 0]
-        rotationOriginCameraInverse.columns.2 = [0, 0, 1, 0]
-        rotationOriginCameraInverse.columns.3 = [-1 * rotationOriginCamera.columns.3[0],
-                                         -1 * rotationOriginCamera.columns.3[1],
-                                         -1 * rotationOriginCamera.columns.3[2],
-                                         1]
-        
-        // Final MV matrix
-        let mvMatrix = rotationOriginCameraInverse * rotationMatrix * rotationOriginCamera
-        
-        // Account for translation of matrix by user input
+        // Translation controlled by joystick input (x, y) and two-finger pinch gesture (z) from user
         let cameraTranslation = calcTranslationMatrix(monitor: parent.monitor, zScale: parent.zScale)
 
         
-        var negativeZTranslation: simd_float4x4 = simd_float4x4()
-        negativeZTranslation.columns.0 = [1, 0, 0, 0]
-        negativeZTranslation.columns.1 = [0, 1, 0, 0]
-        negativeZTranslation.columns.2 = [0, 0, 1, 0]
-        negativeZTranslation.columns.3 = [0, 0, 200, 1]
+        // 3)
+        let rotationOriginCameraInverse: simd_float4x4 = simd_float4x4(columns:
+                                                                        ([1, 0, 0, 0],
+                                                                        [0, 1, 0, 0],
+                                                                        [0, 0, 1, 0],
+                                                                        [-1 * rotationOriginCamera.columns.3[0],
+                                                                          -1 * rotationOriginCamera.columns.3[1],
+                                                                          -1 * rotationOriginCamera.columns.3[2],
+                                                                          1]))
+        // Final MV matrix
+        let mvMatrix = cameraTranslation * rotationOriginCameraInverse * cameraRotation * rotationOriginCamera
+
+        
+//        var initalOffsetZ: simd_float4x4 = simd_float4x4()
+//        initalOffsetZ.columns.0 = [1, 0, 0, 0]
+//        initalOffsetZ.columns.1 = [0, 1, 0, 0]
+//        initalOffsetZ.columns.2 = [0, 0, 1, 0]
+//        initalOffsetZ.columns.3 = [0, 0, 200, 1]
         
         
         // figure out how to view this thing, control the camera
@@ -161,17 +158,16 @@ final class MyPointCloudCoordinator: MTKCoordinator<MyPointCloudView> {
         }
         
         
-        let pmv = projection * cameraTranslation * mvMatrix * parent.cameraOrig * orientationOrig
+        let pmv = projection * mvMatrix * parent.cameraOrig * orientationOrig
         
         parent.prevMVMatrix = mvMatrix
         parent.prevTranslation = cameraTranslation
-        
 
         // projection model view
         return pmv
     }
     
-    func calcRotationQuaternion(xDistance: Float, yDistance: Float) -> simd_quatf {
+    func calcRotationMatrix(xDistance: Float, yDistance: Float) -> matrix_float4x4 {
         // Calculate angle
         let scaler = Float(10.0)
 
@@ -190,8 +186,9 @@ final class MyPointCloudCoordinator: MTKCoordinator<MyPointCloudView> {
 
         // Calculate quaternion
         let rotationQuaternion = simd_quatf(angle: angle, axis: axis)
+        let rotationMatrix = matrix_float4x4(rotationQuaternion)
 
-        return rotationQuaternion
+        return rotationMatrix
 
     }
     

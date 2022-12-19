@@ -125,26 +125,6 @@ struct ContentView: View {
                     
                     ZStack {
                         if pointCloudMode {
-                            //                            VStack(alignment: .leading, spacing: 0) {
-                            //                                Joystick(monitor: monitor, width: draggableDiameter, shape: .circle)
-                            //
-                            //                                MyPointCloudView(
-                            //                                    rotationAngle: rotationAngle,
-                            //                                    maxDepth: $maxDepth,
-                            //                                    minDepth: $minDepth,
-                            //                                    scaleMovement: $scaleMovement,
-                            //                                    capturedData: manager.capturedData,
-                            //                                    dragHorizontalDistance: $dragHorizontalDistance,
-                            //                                    dragVerticalDistance: $dragVerticalDistance,
-                            //                                    cameraOrig: $cameraOrig,
-                            //                                    prevMVMatrix: $prevMVMatrix,
-                            //                                    prevTranslation: $prevTranslation,
-                            //                                    monitor: monitor,
-                            //                                    zScale: $scale
-                            //                                )
-                            //                                .gesture(rotateDrag)
-                            //                                .gesture(zDirectionMagnify)
-                            //                            }
                             MyPointCloudView(
                                 rotationAngle: rotationAngle,
                                 maxDepth: $maxDepth,

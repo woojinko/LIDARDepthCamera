@@ -193,7 +193,7 @@ final class MyPointCloudCoordinator: MTKCoordinator<MyPointCloudView> {
     }
     
     func calcTranslationMatrix(monitor: JoystickMonitor, zScale: CGFloat) -> simd_float4x4 {
-        let translationScaler = Float(5.0)
+        let translationScaler = Float(0.1)
         
         let xMovement = -1 * Float(monitor.xyPoint.x) * translationScaler
         let yMovement = Float(monitor.xyPoint.y) * translationScaler
@@ -208,19 +208,15 @@ final class MyPointCloudCoordinator: MTKCoordinator<MyPointCloudView> {
             ratio = -1.0 * Float(zScale / 1.0)
         }
 
-        let directionScaler = Float(2.0)
+        let directionScaler = Float(3.0)
 
-        let zMovement = directionScaler * ratio * translationScaler
-
-        print(zMovement)
-
+        let zMovement = ratio * directionScaler
         
-        var translationCamera: simd_float4x4 = simd_float4x4()
-        translationCamera.columns.0 = [1, 0, 0, 0]
-        translationCamera.columns.1 = [0, 1, 0, 0]
-        translationCamera.columns.2 = [0, 0, 1, 0]
-        translationCamera.columns.3 = [xMovement, yMovement, zMovement, 1]
-        
+        let translationCamera: simd_float4x4 = simd_float4x4(columns:
+                                                                ([1, 0, 0, 0],
+                                                                 [0, 1, 0, 0],
+                                                                 [0, 0, 1, 0],
+                                                                 [xMovement, yMovement, zMovement, 1]))
         return translationCamera
         
     }

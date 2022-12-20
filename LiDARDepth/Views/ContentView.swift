@@ -112,6 +112,9 @@ struct ContentView: View {
                 NavigationStack {
                     
                     ZStack {
+                        Color.black
+                            .ignoresSafeArea()
+                        
                         if pointCloudMode {
                             MyPointCloudView(
                                 rotationAngle: rotationAngle,
@@ -130,9 +133,11 @@ struct ContentView: View {
                             )
                             .gesture(rotateDrag)
                             .gesture(zDirectionMagnify)
+                            .frame(width: geometry.size.width, height: geometry.size.height * 0.75, alignment: .center)
+
                             
                             Joystick(monitor: monitor, width: draggableDiameter, shape: .circle)
-                                .position(x: 50, y: 50)
+                                .position(x: geometry.size.width * 0.5, y: geometry.size.height * 0.95)
                             
                         }
                         else {
@@ -147,124 +152,117 @@ struct ContentView: View {
                             .frame(width: geometry.size.width, height: geometry.size.height * 0.75, alignment: .center)
                             .position(x: geometry.size.width * 0.5, y: geometry.size.height * 0.45)
                             
-                        }
-                        
-                        
-                        
-                        //.aspectRatio(calcAspect(orientation: viewOrientation, texture: manager.capturedData.depth), contentMode: .fit)
-                        
-                        // Camera button
-                        HStack {
-                            Button {
-                                manager.startPhotoCapture()
-                            } label: {
-                                Image(systemName: manager.processingCapturedResult ? "play.circle" : "camera.circle")
-                                    .resizable()
-                                    .frame(width: geometry.size.width * 0.12, height: geometry.size.width * 0.12)
-                                    .font(.largeTitle)
-                            }
-                            .buttonStyle(ScaleButtonStyle(geometry: geometry))
-                            
-                            
-                            Spacer()
-                            
-                            Button {
+                            // Camera button
+                            HStack {
+                                Button {
+                                    manager.startPhotoCapture()
+                                } label: {
+                                    Image(systemName: manager.processingCapturedResult ? "play.circle" : "camera.circle")
+                                        .resizable()
+                                        .frame(width: geometry.size.width * 0.12, height: geometry.size.width * 0.12)
+                                        .font(.largeTitle)
+                                }
+                                .buttonStyle(ScaleButtonStyle(geometry: geometry))
                                 
-                                timelapseNamingAlert.toggle()
                                 
-                            } label: {
-                                Image(systemName: "checkmark.circle")
-                                    .resizable()
-                                    .frame(width: geometry.size.width * 0.12, height: geometry.size.width * 0.12)
-                                    .font(.largeTitle)
-                            }
-                            .alert("Timelapse Name", isPresented: $timelapseNamingAlert, actions: {
-                                TextField("Name", text: $timelapseName)
+                                Spacer()
                                 
-                                Button("Save", action: {
-                                    manager.startPhotoCapture(isSavingTimelapse: Published.init(initialValue:true), timelapseName: Published.init(initialValue: timelapseName))
-                                })
-                                Button("Cancel", action: {
+                                Button {
                                     
-                                })
-                            },
-                                   message: {
-                                Text("Please enter a name for your timelapse.")
+                                    timelapseNamingAlert.toggle()
+                                    
+                                } label: {
+                                    Image(systemName: "checkmark.circle")
+                                        .resizable()
+                                        .frame(width: geometry.size.width * 0.12, height: geometry.size.width * 0.12)
+                                        .font(.largeTitle)
+                                }
+                                .alert("Timelapse Name", isPresented: $timelapseNamingAlert, actions: {
+                                    TextField("Name", text: $timelapseName)
+                                    
+                                    Button("Save", action: {
+                                        manager.startPhotoCapture(isSavingTimelapse: Published.init(initialValue:true), timelapseName: Published.init(initialValue: timelapseName))
+                                    })
+                                    Button("Cancel", action: {
+                                        
+                                    })
+                                },
+                                       message: {
+                                    Text("Please enter a name for your timelapse.")
+                                }
+                                       
+                                       
+                                       
+                                )
+                                .buttonStyle(ScaleButtonStyle(geometry: geometry))
                             }
-                                   
-                                   
-                                   
-                            )
-                            .buttonStyle(ScaleButtonStyle(geometry: geometry))
-                        }
-                        .frame(width: geometry.size.width * 0.88, height: geometry.size.height * 0.1,  alignment: .center)
-                        .position(x: geometry.size.width / 2, y: geometry.size.height * 0.95)
-                        
-                        
-                        VStack {
-                            Toggle(isOn: $pointCloudMode) {
+                            .frame(width: geometry.size.width * 0.88, height: geometry.size.height * 0.1,  alignment: .center)
+                            .position(x: geometry.size.width / 2, y: geometry.size.height * 0.95)
+                            
+                            
+                            VStack {
+                                Toggle(isOn: $pointCloudMode) {
+                                    
+                                }
+                                .toggleStyle(.switch)
+                            }
+                            .rotationEffect(Angle(degrees: 270))
+                            .frame(width: geometry.size.width * 0.1, height: geometry.size.height * 0.1)
+                            .position(x: geometry.size.width * 0.9, y: geometry.size.height * 0.1)
+                            
+                            
+                            
+                            HStack {
+                                
+                                
+                                
+                                NavigationLink(value: gallery) {
+                                    HStack {
+                                        Image(systemName: "photo.stack.fill")
+                                            .resizable()
+                                            .frame(width:geometry.size.width * 0.07, height: geometry.size.width * 0.07)
+                                            .font(.title3)
+                                    }
+                                }
+                                
+                                Spacer()
+                                
+                                NavigationLink(value: settings) {
+                                    HStack {
+                                        Image(systemName: "gearshape.fill")
+                                            .resizable()
+                                            .frame(width:geometry.size.width * 0.07, height: geometry.size.width * 0.07)
+                                            .font(.title3)
+                                    }
+                                }
+                                
+                                
                                 
                             }
-                            .toggleStyle(.switch)
-                        }
-                        .rotationEffect(Angle(degrees: 270))
-                        .frame(width: geometry.size.width * 0.1, height: geometry.size.height * 0.1)
-                        .position(x: geometry.size.width * 0.9, y: geometry.size.height * 0.1)
-                        
-                        
-                        
-                        HStack {
                             
-                            
-                            
-                            NavigationLink(value: gallery) {
-                                HStack {
-                                    Image(systemName: "photo.stack.fill")
-                                        .resizable()
-                                        .frame(width:geometry.size.width * 0.07, height: geometry.size.width * 0.07)
-                                        .font(.title3)
-                                }
+                            .frame(width: geometry.size.width * 0.4, height: geometry.size.height * 0.03, alignment: .center)
+                            .padding()
+                            .overlay {
+                                
                             }
                             
-                            Spacer()
+                            .foregroundColor(.black.opacity(1))
+                            .background(Color.white.opacity(0.5))
+                            .clipShape(RoundedRectangle(cornerRadius: geometry.size.width * 0.02))
+                            .position(x: geometry.size.width * 0.5, y: geometry.size.height * 0.95)
                             
-                            NavigationLink(value: settings) {
-                                HStack {
-                                    Image(systemName: "gearshape.fill")
-                                        .resizable()
-                                        .frame(width:geometry.size.width * 0.07, height: geometry.size.width * 0.07)
-                                        .font(.title3)
-                                }
+                            .navigationDestination(for: Camera.self) { camera in
+                                
                             }
                             
+                            .navigationDestination(for: Gallery.self) { gallery in
+                                GalleryView()
+                            }
                             
-                            
+                            .navigationDestination(for: Settings.self) { settings in
+                                Text("Settings View")
+                            }
                         }
-                        
-                        .frame(width: geometry.size.width * 0.4, height: geometry.size.height * 0.03, alignment: .center)
-                        .padding()
-                        .overlay {
-                            
-                        }
-                        
-                        .foregroundColor(.black.opacity(1))
-                        .background(Color.white.opacity(0.5))
-                        .clipShape(RoundedRectangle(cornerRadius: geometry.size.width * 0.02))
-                        .position(x: geometry.size.width * 0.5, y: geometry.size.height * 0.95)
-                        
-                        .navigationDestination(for: Camera.self) { camera in
-                            
-                        }
-                        
-                        .navigationDestination(for: Gallery.self) { gallery in
-                            GalleryView()
-                        }
-                        
-                        .navigationDestination(for: Settings.self) { settings in
-                            Text("Settings View")
-                        }
-                        
-                        
                     }
                     .onChange(of: pointCloudMode) { newPointCloudMode in
                         if(newPointCloudMode == true)

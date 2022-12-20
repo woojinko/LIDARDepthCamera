@@ -66,23 +66,11 @@ struct ContentView: View {
     @State private var dragHorizontalDistance = Float(0.0)
     @State private var dragVerticalDistance = Float(0.0)
     
-    @State private var cameraOrig: simd_float4x4 = simd_float4x4(columns:
-                                                                    ([1, 0, 0, 0],
-                                                                     [0, 1, 0, 0],
-                                                                     [0, 0, 1, 0],
-                                                                     [0, 0, 0, 1]))
+    @State private var cameraOrig: simd_float4x4 = matrix_identity_float4x4
     
-    @State private var prevMVMatrix: simd_float4x4 = simd_float4x4(columns:
-                                                                    ([1, 0, 0, 0],
-                                                                     [0, 1, 0, 0],
-                                                                     [0, 0, 1, 0],
-                                                                     [0, 0, 0, 1]))
+    @State private var prevMVMatrix: simd_float4x4 = matrix_identity_float4x4
     
-    @State private var prevTranslation: simd_float4x4 = simd_float4x4(columns:
-                                                                        ([1, 0, 0, 0],
-                                                                         [0, 1, 0, 0],
-                                                                         [0, 0, 1, 0],
-                                                                         [0, 0, 0, 1]))
+    @State private var prevTranslation: simd_float4x4 = matrix_identity_float4x4
     
     @StateObject private var monitor = JoystickMonitor()
     private let draggableDiameter: CGFloat = 100
@@ -91,12 +79,12 @@ struct ContentView: View {
     var rotateDrag: some Gesture {
         DragGesture()
             .onChanged { value in
-                self.dragHorizontalDistance = Float(value.translation.width)
-                self.dragVerticalDistance = Float(value.translation.height)
+                dragHorizontalDistance = Float(value.translation.width)
+                dragVerticalDistance = Float(value.translation.height)
             }
             .onEnded { value in
-                self.dragHorizontalDistance = Float(0.0)
-                self.dragVerticalDistance = Float(0.0)
+                dragHorizontalDistance = Float(0.0)
+                dragVerticalDistance = Float(0.0)
             }
     }
     
@@ -106,7 +94,7 @@ struct ContentView: View {
     var zDirectionMagnify: some Gesture {
         MagnificationGesture()
             .onChanged { value in
-                self.scale = value
+                scale = value
             } .onEnded { value in
                 scale = 1.0
             }
@@ -137,7 +125,8 @@ struct ContentView: View {
                                 prevMVMatrix: $prevMVMatrix,
                                 prevTranslation: $prevTranslation,
                                 monitor: monitor,
-                                zScale: $scale
+                                zScale: $scale,
+                                mode: $pointCloudMode
                             )
                             .gesture(rotateDrag)
                             .gesture(zDirectionMagnify)
@@ -147,7 +136,7 @@ struct ContentView: View {
                             
                         }
                         else {
-                            
+                
                             // Camera view
                             MetalTextureColorThresholdDepthView(
                                 rotationAngle: rotationAngle,
@@ -155,6 +144,8 @@ struct ContentView: View {
                                 minDepth: $minDepth,
                                 capturedData: manager.capturedData
                             )
+                            .frame(width: geometry.size.width, height: geometry.size.height * 0.75, alignment: .center)
+                            .position(x: geometry.size.width * 0.5, y: geometry.size.height * 0.45)
                             
                         }
                         
@@ -206,7 +197,7 @@ struct ContentView: View {
                             )
                             .buttonStyle(ScaleButtonStyle(geometry: geometry))
                         }
-                        .frame(width: geometry.size.width * 0.88, alignment: .center)
+                        .frame(width: geometry.size.width * 0.88, height: geometry.size.height * 0.1,  alignment: .center)
                         .position(x: geometry.size.width / 2, y: geometry.size.height * 0.95)
                         
                         

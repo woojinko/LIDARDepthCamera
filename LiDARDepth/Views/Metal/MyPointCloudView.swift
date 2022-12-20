@@ -32,6 +32,8 @@ struct MyPointCloudView: UIViewRepresentable, MetalRepresentable {
     @State var monitor: JoystickMonitor
     
     @Binding var zScale: CGFloat
+    
+    @Binding var mode: Bool
 
     func makeCoordinator() -> MyPointCloudCoordinator {
         MyPointCloudCoordinator(parent: self)
@@ -130,14 +132,6 @@ final class MyPointCloudCoordinator: MTKCoordinator<MyPointCloudView> {
                                                                           1]))
         // Final MV matrix
         let mvMatrix = cameraTranslation * rotationOriginCameraInverse * cameraRotation * rotationOriginCamera
-
-        
-//        var initalOffsetZ: simd_float4x4 = simd_float4x4()
-//        initalOffsetZ.columns.0 = [1, 0, 0, 0]
-//        initalOffsetZ.columns.1 = [0, 1, 0, 0]
-//        initalOffsetZ.columns.2 = [0, 0, 1, 0]
-//        initalOffsetZ.columns.3 = [0, 0, 200, 1]
-        
         
         // figure out how to view this thing, control the camera
         // using two finger scroll to change which point you're rotating around
@@ -157,8 +151,13 @@ final class MyPointCloudCoordinator: MTKCoordinator<MyPointCloudView> {
             parent.cameraOrig = parent.prevTranslation * parent.cameraOrig
         }
         
+        if (parent.mode == false) {
+            parent.cameraOrig = matrix_identity_float4x4
+        }
         
         let pmv = projection * mvMatrix * parent.cameraOrig * orientationOrig
+
+//        let pmv = projection * initalOffsetZ * mvMatrix * parent.cameraOrig * orientationOrig
         
         parent.prevMVMatrix = mvMatrix
         parent.prevTranslation = cameraTranslation

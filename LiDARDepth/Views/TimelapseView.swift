@@ -33,7 +33,7 @@ struct TimelapseView: View {
         let s = [Bool](repeating: false, count: timelapse.images.count)
         //print(s)
         _selected = State(initialValue: s)
-        print(self.selected)
+//        print(self.selected)
     }
     
     var body: some View {

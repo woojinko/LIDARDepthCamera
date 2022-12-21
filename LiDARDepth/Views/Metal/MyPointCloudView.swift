@@ -156,8 +156,6 @@ final class MyPointCloudCoordinator: MTKCoordinator<MyPointCloudView> {
         }
         
         let pmv = projection * mvMatrix * parent.cameraOrig * orientationOrig
-
-//        let pmv = projection * initalOffsetZ * mvMatrix * parent.cameraOrig * orientationOrig
         
         parent.prevMVMatrix = mvMatrix
         parent.prevTranslation = cameraTranslation

@@ -52,7 +52,7 @@ class DataProvider: ObservableObject {
         do {
             let decoder = PropertyListDecoder()
             let data = try Data(contentsOf: dataSourceURL)
-            var decodedTimelapses = try! decoder.decode([Timelapse].self, from: data)
+            let decodedTimelapses = try! decoder.decode([Timelapse].self, from: data)
             
             
             return decodedTimelapses
@@ -63,7 +63,7 @@ class DataProvider: ObservableObject {
     }
     
     func getTimelapse(id: UUID) -> Timelapse? {
-        var timelapses = getAllTimelapses()
+        let timelapses = getAllTimelapses()
         
         for tl in timelapses {
             if(tl.id == id) {
@@ -76,7 +76,7 @@ class DataProvider: ObservableObject {
     private func saveTimelapses() {
         do {
             let encoder = PropertyListEncoder()
-            var data = try encoder.encode(allTimelapses)
+            let data = try encoder.encode(allTimelapses)
             
             try data.write(to: dataSourceURL)
         } catch {

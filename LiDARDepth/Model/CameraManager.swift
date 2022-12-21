@@ -122,31 +122,16 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
         self.capturedData.capturedPhoto = capturedData.capturedPhoto
         self.capturedData.depthData = capturedData.depthData
         
-        
         let compressionQuality: CGFloat = 0.9
         
         let url = getDocumentsDirectory().appendingPathComponent("image.jpg")
         
-        //        let URL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
-        
         guard let imageData = self.capturedData.capturedPhoto?.fileDataRepresentation() else { return}
         var imageAsUIImage = UIImage(data: imageData)!
         imageAsUIImage = imageAsUIImage.rotate(radians: 0) ?? imageAsUIImage
-        //        let dataUIImage = imageAsUIImage?.jpegData(compressionQuality: compressionQuality)
-        //        try? dataUIImage?.write(to: url)
-        
-        
-        
-        
+            
         
         let depthData = self.capturedData.depthData!
-        //let depthOrientation = exifOrientationFromDeviceOrientation(deviceOrientation: orientation)
-        
-        
-        //let depthDataMap = depthData.applyingExifOrientation(depthOrientation).depthDataMap
-        
-        // do I need this?
-        //        depthDataMap.normalize()
         
         let ciImage = CIImage(cvPixelBuffer: depthData.depthDataMap)
         var depthAsUIImage = UIImage(ciImage: ciImage)
@@ -158,75 +143,6 @@ class CameraManager: ObservableObject, CaptureDataReceiver {
 
         var pointCloudArray = [GLKVector3]()
         var depthDataArray = capturedData.depthData!.depthDataMap.extract()
-        print(depthDataArray[0...48])
-        print("\(CVPixelBufferGetWidth(self.capturedData.depthData!.depthDataMap)) \(CVPixelBufferGetHeight(self.capturedData.depthData!.depthDataMap))")
-        
-        for y in stride(from: 0, to: CVPixelBufferGetHeight(self.capturedData.depthData!.depthDataMap), by: 48) {
-            
-            for x in stride(from: 0, to: CVPixelBufferGetWidth(self.capturedData.depthData!.depthDataMap), by: 48) {
-                
-                //depthArray.append(GLKVector3Make(Float(x), Float(y), Float(src[y * self.capturedData.depth!.width + x])))
-                pointCloudArray.append(GLKVector3Make(Float(x), Float(y), Float(depthDataArray[(y * CVPixelBufferGetWidth(self.capturedData.depthData!.depthDataMap)) + x])))
-                
-            }
-        }
-        
-        
-        var points = [GLKVector3]()
-        for i in 0...99 {
-            for j in 0...99 {
-                let x = (Float(i) / 10.0) - 6.0
-                let y = (Float(j) / 10.0) - 6.0
-                var z: Float = 0.0
-                let sphereSurf = (9 - (x * x) - (y * y))
-                if sphereSurf > 0 {
-                    z = sphereSurf.squareRoot() - 1.5
-                    if z < 0 { z = 0 }
-                }
-                // Add a bit of noise to Z, between -0.1 and 0.1
-                let noise = ((Float(arc4random_uniform(10000)) / 10000) * 0.2) - 0.1
-                let point = GLKVector3Make(Float(i)/10.0, Float(j)/10.0, z + noise)
-                points.append(point)
-                
-            }
-        }
-        
-
-        
-        
-        
-        
-        print(pointCloudArray.count)
-        for i in stride(from: 0, to: 3, by: 1) {
-            print("\(pointCloudArray[i].x) \(pointCloudArray[i].y) \(pointCloudArray[i].z)")
-
-            
-        }
-        
-        var ICPInstance = ICP(pointCloudArray, pointCloudArray)
-        var finalTransform = ICPInstance.iterate(maxIterations: 3, minErrorChange: 5.0)
-        
-        print(finalTransform)
-
-//        var ICPInstance = ICP(depthArray, depthArray)
-//        var finalTransform = ICPInstance.iterate(maxIterations: 10, minErrorChange: 0.0)
-//        
-//        print(finalTransform)
-        
-        
-//        for ()
-//
-//        let pointCloudGLK = GLKVector3MakeWithArray(&src)
-//
-//        let ICPInstance = ICP(pointCloudGLK, pointCloudGLK)
-//        let finalTransform = ICPInstance.iterate(maxIterations: 100, minErrorChange: 0.0)
-//
-        //print(src.count)
-        //print(src[20...40])
-        //print(src.count)
-        //print(src[0...36])
-        
-        
         
         let newImage = TL_Image(raw: imageAsUIImage.pngData()!, depth: depthDataArray, depth_width: CVPixelBufferGetWidth(self.capturedData.depthData!.depthDataMap), depth_height: CVPixelBufferGetHeight(self.capturedData.depthData!.depthDataMap), depth_step: 48)
         

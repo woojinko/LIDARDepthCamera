@@ -179,11 +179,6 @@ extension CameraController: AVCaptureDataOutputSynchronizerDelegate {
               let cameraCalibrationData = syncedDepthData.depthData.cameraCalibrationData else { return }
         
         // Package the captured data.
-//        let data = CameraCapturedData(depth: syncedDepthData.depthData.depthDataMap.texture(withFormat: .r16Float, planeIndex: 0, addToCache: textureCache),
-//                                      colorY: pixelBuffer.texture(withFormat: .r8Unorm, planeIndex: 0, addToCache: textureCache),
-//                                      colorCbCr: pixelBuffer.texture(withFormat: .rg8Unorm, planeIndex: 1, addToCache: textureCache),
-//                                      cameraIntrinsics: cameraCalibrationData.intrinsicMatrix,
-//                                      cameraReferenceDimensions: cameraCalibrationData.intrinsicMatrixReferenceDimensions)
         let data = CameraCapturedData(depth:
                                         syncedDepthData.depthData.depthDataMap.texture(withFormat: .r16Float, planeIndex: 0, addToCache: textureCache),
                                       depthData: syncedDepthData.depthData,
@@ -233,19 +228,14 @@ extension CameraController: AVCapturePhotoCaptureDelegate {
         
         
         // Package the captured data.
-//        let data = CameraCapturedData(depth: convertedDepth.depthDataMap.texture(withFormat: .r16Float, planeIndex: 0, addToCache: textureCache),
-//                                      colorY: pixelBuffer.texture(withFormat: .r8Unorm, planeIndex: 0, addToCache: textureCache),
-//                                      colorCbCr: pixelBuffer.texture(withFormat: .rg8Unorm, planeIndex: 1, addToCache: textureCache),
-//                                      cameraIntrinsics: cameraCalibrationData.intrinsicMatrix,
-//                                      cameraReferenceDimensions: cameraCalibrationData.intrinsicMatrixReferenceDimensions, capturedPhoto: photo)
-//
         let data = CameraCapturedData(depth:
                                         convertedDepth.depthDataMap.texture(withFormat: .r16Float, planeIndex: 0, addToCache: textureCache),
                                       depthData: convertedDepth,
                                       colorY: pixelBuffer.texture(withFormat: .r8Unorm, planeIndex: 0, addToCache: textureCache),
                                       colorCbCr: pixelBuffer.texture(withFormat: .rg8Unorm, planeIndex: 1, addToCache: textureCache),
                                       cameraIntrinsics: cameraCalibrationData.intrinsicMatrix,
-                                      cameraReferenceDimensions: cameraCalibrationData.intrinsicMatrixReferenceDimensions, capturedPhoto: photo)
+                                      cameraReferenceDimensions: cameraCalibrationData.intrinsicMatrixReferenceDimensions,
+                                      capturedPhoto: photo)
         
         delegate?.onNewPhotoData(capturedData: data)
     }

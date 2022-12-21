@@ -134,10 +134,12 @@ struct ContentView: View {
                             .gesture(rotateDrag)
                             .gesture(zDirectionMagnify)
                             .frame(width: geometry.size.width, height: geometry.size.height * 0.75, alignment: .center)
+                            .position(x: geometry.size.width * 0.5, y: geometry.size.height * 0.45)
+
 
                             
                             Joystick(monitor: monitor, width: draggableDiameter, shape: .circle)
-                                .position(x: geometry.size.width * 0.5, y: geometry.size.height * 0.95)
+                                .position(x: geometry.size.width * 0.5, y: geometry.size.height * 0.925)
                             
                         }
                         else {
@@ -197,20 +199,7 @@ struct ContentView: View {
                                 .buttonStyle(ScaleButtonStyle(geometry: geometry))
                             }
                             .frame(width: geometry.size.width * 0.88, height: geometry.size.height * 0.1,  alignment: .center)
-                            .position(x: geometry.size.width / 2, y: geometry.size.height * 0.95)
-                            
-                            
-                            VStack {
-                                Toggle(isOn: $pointCloudMode) {
-                                    
-                                }
-                                .toggleStyle(.switch)
-                            }
-                            .rotationEffect(Angle(degrees: 270))
-                            .frame(width: geometry.size.width * 0.1, height: geometry.size.height * 0.1)
-                            .position(x: geometry.size.width * 0.9, y: geometry.size.height * 0.1)
-                            
-                            
+                            .position(x: geometry.size.width / 2, y: geometry.size.height * 0.925)
                             
                             HStack {
                                 
@@ -249,7 +238,7 @@ struct ContentView: View {
                             .foregroundColor(.black.opacity(1))
                             .background(Color.white.opacity(0.5))
                             .clipShape(RoundedRectangle(cornerRadius: geometry.size.width * 0.02))
-                            .position(x: geometry.size.width * 0.5, y: geometry.size.height * 0.95)
+                            .position(x: geometry.size.width * 0.5, y: geometry.size.height * 0.925)
                             
                             .navigationDestination(for: Camera.self) { camera in
                                 
@@ -263,6 +252,15 @@ struct ContentView: View {
                                 Text("Settings View")
                             }
                         }
+                        VStack {
+                            Toggle(isOn: $pointCloudMode) {
+                                
+                            }
+                            .toggleStyle(.switch)
+                        }
+                        .rotationEffect(Angle(degrees: 0))
+                        .frame(width: geometry.size.width * 0.1, height: geometry.size.height * 0.1)
+                        .position(x: geometry.size.width * 0.9, y: geometry.size.height * 0.025)
                     }
                     .onChange(of: pointCloudMode) { newPointCloudMode in
                         if(newPointCloudMode == true)
